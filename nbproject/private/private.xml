@@ -3,9 +3,34 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/ClientRegisterServlet.java</file>
             <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/index.html</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-profile.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-ai-support.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/UploadCaseServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/GetCasesServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-home.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-upload-case.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-new-cases.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-home.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/LogoutServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/styles.css</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/ChangePasswordServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-dashboard.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/UpdateLawyerProfileServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-search-lawyers.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/SearchLawyersServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/GetLawyerStatsServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-ai-support.jsp</file>
             <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-register.html</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/GetActiveCasesServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-profile.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/UpdateProfileServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/ClientRegisterServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/GetNewCasesServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/AcceptCaseServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/lawyer-active-cases.jsp</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/src/java/LoginServlet.java</file>
+            <file>file:/C:/Users/Pranjal%20Pal/Documents/NetBeansProjects/WebApplication4/web/client-dashboard.jsp</file>
         </group>
     </open-files>
 </project-private>

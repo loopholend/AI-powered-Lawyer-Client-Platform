@@ -56,6 +56,26 @@
         <servlet-name>GetLawyerStatsServlet</servlet-name>
         <servlet-class>GetLawyerStatsServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GeminiAIServlet</servlet-name>
+        <servlet-class>GeminiAIServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetClientStatsServlet</servlet-name>
+        <servlet-class>GetClientStatsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CancelCaseServlet</servlet-name>
+        <servlet-class>CancelCaseServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CompleteCaseServlet</servlet-name>
+        <servlet-class>CompleteCaseServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetClientCasesServlet</servlet-name>
+        <servlet-class>GetClientCasesServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ClientRegisterServlet</servlet-name>
         <url-pattern>/ClientRegisterServlet</url-pattern>
@@ -111,6 +131,26 @@
     <servlet-mapping>
         <servlet-name>GetLawyerStatsServlet</servlet-name>
         <url-pattern>/GetLawyerStatsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GeminiAIServlet</servlet-name>
+        <url-pattern>/GeminiAIServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetClientStatsServlet</servlet-name>
+        <url-pattern>/GetClientStatsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CancelCaseServlet</servlet-name>
+        <url-pattern>/CancelCaseServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CompleteCaseServlet</servlet-name>
+        <url-pattern>/CompleteCaseServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetClientCasesServlet</servlet-name>
+        <url-pattern>/GetClientCasesServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

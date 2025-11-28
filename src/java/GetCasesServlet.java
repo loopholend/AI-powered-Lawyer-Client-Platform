@@ -68,7 +68,8 @@ public class GetCasesServlet extends HttpServlet {
             pstmtClientId.close();
             
             // Now get cases
-            String sql = "SELECT * FROM cases WHERE client_id = ? ORDER BY created_at DESC";
+            String sql = "SELECT case_id, case_title, case_type, case_description, city, urgency, case_status, created_at " +
+             "FROM cases WHERE case_status IN ('pending', 'active') ORDER BY created_at DESC";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, clientId);
             

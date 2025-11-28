@@ -42,9 +42,14 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
-        body { margin: 0; padding: 20px; background: #f9fafb; font-family: 'Inter', sans-serif; }
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background: #f9fafb; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
         .content-header {
             background: white;
             padding: 1.5rem 2rem;
@@ -55,7 +60,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        .content-header h1 { color: #1f2937; font-size: 1.75rem; margin: 0; }
+        
+        .content-header h1 { 
+            color: #1f2937; 
+            font-size: 1.75rem; 
+            margin: 0; 
+        }
+        
         .btn-add-case {
             background: #2563eb;
             color: white;
@@ -66,7 +77,11 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .btn-add-case:hover { background: #1e40af; transform: translateY(-2px); }
+        
+        .btn-add-case:hover { 
+            background: #1e40af; 
+            transform: translateY(-2px); 
+        }
         
         .modal {
             display: none;
@@ -79,7 +94,12 @@
             background: rgba(0,0,0,0.5);
             overflow-y: auto;
         }
-        .modal.active { display: flex; align-items: center; justify-content: center; }
+        
+        .modal.active { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
         
         .modal-content {
             background: white;
@@ -98,7 +118,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        .modal-header h2 { color: #1f2937; margin: 0; font-size: 1.5rem; }
+        
+        .modal-header h2 { 
+            color: #1f2937; 
+            margin: 0; 
+            font-size: 1.5rem; 
+        }
+        
         .close-btn {
             background: none;
             border: none;
@@ -106,13 +132,19 @@
             color: #6b7280;
             cursor: pointer;
         }
-        .close-btn:hover { color: #1f2937; }
         
-        .modal-body { padding: 2rem; }
+        .close-btn:hover { 
+            color: #1f2937; 
+        }
+        
+        .modal-body { 
+            padding: 2rem; 
+        }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
+        
         .form-group label {
             display: block;
             color: #1f2937;
@@ -120,7 +152,11 @@
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
         }
-        .required { color: #ef4444; }
+        
+        .required { 
+            color: #ef4444; 
+        }
+        
         .form-control {
             width: 100%;
             padding: 0.75rem;
@@ -130,8 +166,16 @@
             font-family: 'Inter', sans-serif;
             transition: border-color 0.3s;
         }
-        .form-control:focus { outline: none; border-color: #2563eb; }
-        textarea.form-control { min-height: 120px; resize: vertical; }
+        
+        .form-control:focus { 
+            outline: none; 
+            border-color: #2563eb; 
+        }
+        
+        textarea.form-control { 
+            min-height: 120px; 
+            resize: vertical; 
+        }
         
         .form-row {
             display: grid;
@@ -147,10 +191,28 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .file-upload:hover { border-color: #2563eb; background: #f9fafb; }
-        .file-upload.active { border-color: #2563eb; background: #eff6ff; }
-        .file-upload i { font-size: 3rem; color: #6b7280; margin-bottom: 1rem; }
-        .file-upload p { color: #6b7280; margin: 0.5rem 0; }
+        
+        .file-upload:hover { 
+            border-color: #2563eb; 
+            background: #f9fafb; 
+        }
+        
+        .file-upload.active { 
+            border-color: #2563eb; 
+            background: #eff6ff; 
+        }
+        
+        .file-upload i { 
+            font-size: 3rem; 
+            color: #6b7280; 
+            margin-bottom: 1rem; 
+        }
+        
+        .file-upload p { 
+            color: #6b7280; 
+            margin: 0.5rem 0; 
+        }
+        
         .file-name {
             color: #2563eb;
             font-weight: 600;
@@ -165,6 +227,7 @@
             gap: 1rem;
             justify-content: flex-end;
         }
+        
         .btn-cancel, .btn-submit {
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -174,45 +237,173 @@
             font-size: 0.95rem;
             transition: all 0.3s;
         }
-        .btn-cancel { background: #f9fafb; color: #1f2937; }
-        .btn-cancel:hover { background: #e5e7eb; }
-        .btn-submit { background: #2563eb; color: white; }
-        .btn-submit:hover { background: #1e40af; }
+        
+        .btn-cancel { 
+            background: #f9fafb; 
+            color: #1f2937; 
+        }
+        
+        .btn-cancel:hover { 
+            background: #e5e7eb; 
+        }
+        
+        .btn-submit { 
+            background: #2563eb; 
+            color: white; 
+        }
+        
+        .btn-submit:hover { 
+            background: #1e40af; 
+        }
         
         .cases-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
         }
+        
         .case-card {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border-left: 4px solid #2563eb;
+            transition: all 0.3s;
         }
+        
+        .case-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
         .case-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
         }
-        .case-title { font-size: 1.2rem; font-weight: 700; color: #1f2937; }
+        
+        .case-title { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: #1f2937; 
+        }
+        
         .case-status {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
         }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-active { background: #dcfce7; color: #166534; }
+        
+        .status-pending { 
+            background: #fef3c7; 
+            color: #92400e; 
+        }
+        
+        .status-active { 
+            background: #dcfce7; 
+            color: #166534; 
+        }
+        
+        .status-completed { 
+            background: #d1fae5; 
+            color: #065f46; 
+        }
+        
+        .status-cancelled { 
+            background: #fee2e2; 
+            color: #991b1b; 
+        }
+        
         .case-meta {
             color: #6b7280;
             font-size: 0.9rem;
             line-height: 1.6;
             margin-bottom: 0.5rem;
         }
-        .case-meta i { color: #2563eb; width: 18px; margin-right: 0.5rem; }
+        
+        .case-meta i { 
+            color: #2563eb; 
+            width: 18px; 
+            margin-right: 0.5rem; 
+        }
+        
+        /* Case Action Buttons */
+        .case-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+        }
+        
+        .btn-complete, 
+        .btn-cancel-case {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn-complete {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+        
+        .btn-complete:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-cancel-case {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-cancel-case:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Status Badges */
+        .case-completed-badge, 
+        .case-cancelled-badge {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .case-completed-badge {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #a7f3d0;
+        }
+        
+        .case-cancelled-badge {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fecaca;
+        }
         
         .empty-state {
             text-align: center;
@@ -220,12 +411,30 @@
             background: white;
             border-radius: 12px;
         }
-        .empty-state i { font-size: 4rem; color: #e5e7eb; margin-bottom: 1rem; }
-        .empty-state h3 { color: #1f2937; margin-bottom: 0.5rem; }
-        .empty-state p { color: #6b7280; }
+        
+        .empty-state i { 
+            font-size: 4rem; 
+            color: #e5e7eb; 
+            margin-bottom: 1rem; 
+        }
+        
+        .empty-state h3 { 
+            color: #1f2937; 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .empty-state p { 
+            color: #6b7280; 
+        }
         
         @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
+            .form-row { 
+                grid-template-columns: 1fr; 
+            }
+            
+            .case-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -336,44 +545,36 @@
         </div>
     </div>
 
-        <script>
+    <script>
         window.onload = function() {
             loadCases();
             
-            // Check for success message from URL
             var urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('success') === 'true') {
-                showSuccessMessage();
-                // Remove the success parameter from URL
-                window.history.replaceState({}, document.title, window.location.pathname);
+                showMessage('Case submitted successfully!', 'success');
+            } else if (urlParams.get('completed') === 'true') {
+                showMessage('Case marked as completed!', 'success');
+            } else if (urlParams.get('cancelled') === 'true') {
+                showMessage('Case cancelled successfully!', 'success');
             } else if (urlParams.get('error') === 'true') {
-                showErrorMessage();
-                window.history.replaceState({}, document.title, window.location.pathname);
+                showMessage('An error occurred. Please try again.', 'error');
             }
         };
 
-        function showSuccessMessage() {
+        function showMessage(text, type) {
             var messageDiv = document.createElement('div');
-            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; animation: slideIn 0.3s ease;';
-            messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Case submitted successfully!';
+            var bgColor = type === 'success' ? '#10b981' : '#ef4444';
+            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: ' + bgColor + '; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; animation: slideIn 0.3s ease;';
+            messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + text;
             document.body.appendChild(messageDiv);
             
             setTimeout(function() {
                 messageDiv.style.animation = 'slideOut 0.3s ease';
                 setTimeout(function() {
-                    document.body.removeChild(messageDiv);
+                    if (document.body.contains(messageDiv)) {
+                        document.body.removeChild(messageDiv);
+                    }
                 }, 300);
-            }, 3000);
-        }
-
-        function showErrorMessage() {
-            var messageDiv = document.createElement('div');
-            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ef4444; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999;';
-            messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error submitting case. Please try again.';
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(function() {
-                document.body.removeChild(messageDiv);
             }, 3000);
         }
 
@@ -398,7 +599,6 @@
             if (fileInput.files.length > 0) {
                 var file = fileInput.files[0];
                 
-                // Check file size (5MB limit)
                 if (file.size > 5 * 1024 * 1024) {
                     alert('File size must be less than 5MB');
                     fileInput.value = '';
@@ -414,9 +614,8 @@
         function loadCases() {
             console.log('Loading cases...');
             
-            fetch('GetCasesServlet')
+            fetch('GetClientCasesServlet')
                 .then(function(response) {
-                    console.log('Response status:', response.status);
                     return response.json();
                 })
                 .then(function(data) {
@@ -442,15 +641,40 @@
                         var statusClass = 'status-' + c.status;
                         var statusText = c.status.charAt(0).toUpperCase() + c.status.slice(1);
                         
+                        var actionButtons = '';
+                        
+                        if (c.status === 'pending' || c.status === 'active') {
+                            actionButtons = 
+                                '<div class="case-actions">' +
+                                    '<button class="btn-complete" onclick="completeCase(' + c.caseId + ')">' +
+                                        '<i class="fas fa-check"></i> Mark Completed' +
+                                    '</button>' +
+                                    '<button class="btn-cancel-case" onclick="cancelCase(' + c.caseId + ')">' +
+                                        '<i class="fas fa-times"></i> Cancel' +
+                                    '</button>' +
+                                '</div>';
+                        } else if (c.status === 'completed') {
+                            actionButtons = 
+                                '<div class="case-completed-badge">' +
+                                    '<i class="fas fa-check-circle"></i> Case Completed' +
+                                '</div>';
+                        } else if (c.status === 'cancelled') {
+                            actionButtons = 
+                                '<div class="case-cancelled-badge">' +
+                                    '<i class="fas fa-ban"></i> Case Cancelled' +
+                                '</div>';
+                        }
+                        
                         card.innerHTML =
                             '<div class="case-header">' +
-                                '<div class="case-title">' + c.title + '</div>' +
+                                '<div class="case-title">' + escapeHtml(c.title) + '</div>' +
                                 '<div class="case-status ' + statusClass + '">' + statusText + '</div>' +
                             '</div>' +
-                            '<div class="case-meta"><i class="fas fa-gavel"></i>' + c.type + '</div>' +
-                            '<div class="case-meta"><i class="fas fa-map-marker-alt"></i>' + c.city + '</div>' +
+                            '<div class="case-meta"><i class="fas fa-gavel"></i>' + escapeHtml(c.type) + '</div>' +
+                            '<div class="case-meta"><i class="fas fa-map-marker-alt"></i>' + escapeHtml(c.city) + '</div>' +
                             '<div class="case-meta"><i class="fas fa-clock"></i>Urgency: ' + (c.urgency || 'Normal') + '</div>' +
-                            '<div class="case-meta"><i class="fas fa-calendar"></i>Submitted: ' + c.createdAt + '</div>';
+                            '<div class="case-meta"><i class="fas fa-calendar"></i>Submitted: ' + c.createdAt + '</div>' +
+                            actionButtons;
                         
                         grid.appendChild(card);
                     });
@@ -461,11 +685,49 @@
                 });
         }
 
-        // Add CSS animations
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function completeCase(caseId) {
+            if (confirm('Mark this case as completed?')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'CompleteCaseServlet';
+                
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'caseId';
+                input.value = caseId;
+                form.appendChild(input);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function cancelCase(caseId) {
+            if (confirm('Are you sure you want to cancel this case? This action cannot be undone.')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'CancelCaseServlet';
+                
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'caseId';
+                input.value = caseId;
+                form.appendChild(input);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
         var style = document.createElement('style');
         style.textContent = '@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }';
         document.head.appendChild(style);
     </script>
-
 </body>
 </html>
