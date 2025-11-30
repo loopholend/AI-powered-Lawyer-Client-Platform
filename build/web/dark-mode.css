@@ -1,0 +1,215 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    background: #1a1a2e !important;
+    color: #eee !important;
+}
+
+body.dark-mode .page-header,
+body.dark-mode .profile-card,
+body.dark-mode .password-card,
+body.dark-mode .search-container,
+body.dark-mode .quick-actions,
+body.dark-mode .recent-activity,
+body.dark-mode .stat-card,
+body.dark-mode .case-card,
+body.dark-mode .lawyer-card,
+body.dark-mode .action-card,
+body.dark-mode .profile-completion,
+body.dark-mode .filters-section,
+body.dark-mode .content-header,
+body.dark-mode .main-content,
+body.dark-mode .profile-container {
+    background: #16213e !important;
+    color: #eee !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode .profile-name,
+body.dark-mode .lawyer-name,
+body.dark-mode .case-title,
+body.dark-mode .action-title,
+body.dark-mode .activity-title,
+body.dark-mode .stat-label,
+body.dark-mode .client-name,
+body.dark-mode .content-header h1 {
+    color: #eee !important;
+}
+
+body.dark-mode p,
+body.dark-mode .page-header p,
+body.dark-mode .profile-email,
+body.dark-mode .case-description,
+body.dark-mode .action-desc,
+body.dark-mode .activity-time,
+body.dark-mode .client-email,
+body.dark-mode .meta-item,
+body.dark-mode .detail-row,
+body.dark-mode .content-header p {
+    color: #b8b8b8 !important;
+}
+
+body.dark-mode .form-control,
+body.dark-mode .filter-input,
+body.dark-mode .chat-input {
+    background: #0f3460 !important;
+    color: #eee !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .filter-input:focus,
+body.dark-mode .chat-input:focus {
+    border-color: #667eea !important;
+}
+
+body.dark-mode .form-control:disabled {
+    background: #0a1929 !important;
+    color: #888 !important;
+    -webkit-text-fill-color: #888 !important;
+}
+
+body.dark-mode .case-meta,
+body.dark-mode .client-info,
+body.dark-mode .lawyer-details,
+body.dark-mode .activity-item {
+    background: #0f3460 !important;
+}
+
+body.dark-mode .empty-state {
+    background: #16213e !important;
+}
+
+body.dark-mode .chat-messages {
+    background: #0f3460 !important;
+}
+
+body.dark-mode .message-content {
+    background: #16213e !important;
+    color: #eee !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .message.user .message-content {
+    background: #2563eb !important;
+    color: white !important;
+}
+
+body.dark-mode .message.ai .message-content {
+    background: #16213e !important;
+    color: #eee !important;
+}
+
+body.dark-mode .welcome-message,
+body.dark-mode .welcome-message h3 {
+    color: #b8b8b8 !important;
+}
+
+body.dark-mode .quick-tool-card,
+body.dark-mode .suggestion-card {
+    background: #16213e !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .quick-tool-card:hover,
+body.dark-mode .suggestion-card:hover {
+    border-color: #2563eb !important;
+}
+
+body.dark-mode .action-card {
+    background: #0f3460 !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .action-card:hover {
+    background: #16213e !important;
+}
+
+body.dark-mode label {
+    color: #eee !important;
+}
+
+body.dark-mode small {
+    color: #b8b8b8 !important;
+}
+
+body.dark-mode .btn-view,
+body.dark-mode .btn-view-details {
+    background: #0f3460 !important;
+    color: #eee !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .btn-view:hover,
+body.dark-mode .btn-view-details:hover {
+    background: #1a5490 !important;
+}
+
+body.dark-mode .tab {
+    background: #16213e !important;
+    border-color: #1a5490 !important;
+    color: #b8b8b8 !important;
+}
+
+body.dark-mode .tab:hover {
+    border-color: #667eea !important;
+    color: #667eea !important;
+}
+
+body.dark-mode .status-badge {
+    /* Keep original colors for badges */
+}
+
+body.dark-mode .welcome-banner {
+    /* Keep gradient */
+}
+
+body.dark-mode .sidebar {
+    /* Keep sidebar gradient */
+}
+
+body.dark-mode .tool-btn {
+    background: #0f3460 !important;
+    border-color: #1a5490 !important;
+}
+
+body.dark-mode .tool-btn:hover,
+body.dark-mode .tool-btn.active {
+    background: #2563eb !important;
+    color: white !important;
+}
+
+body.dark-mode .chat-input-container {
+    background: #16213e !important;
+    border-top-color: #1a5490 !important;
+}
+
+body.dark-mode .modal-content {
+    background: #16213e !important;
+    color: #eee !important;
+}
+
+body.dark-mode .modal-header h2 {
+    color: #eee !important;
+}
+
+body.dark-mode .close-btn {
+    color: #b8b8b8 !important;
+}
+
+body.dark-mode textarea.form-control {
+    background: #0f3460 !important;
+    color: #eee !important;
+}
+
+body.dark-mode select.form-control {
+    background: #0f3460 !important;
+    color: #eee !important;
+}
+
+body.dark-mode select.form-control option {
+    background: #16213e !important;
+    color: #eee !important;
+}

@@ -40,10 +40,13 @@ public class LoginServlet extends HttpServlet {
         
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String remember = request.getParameter("remember");
+        
+        System.out.println("=== LOGIN ATTEMPT ===");
+        System.out.println("Email: " + email);
         
         if (email == null || email.trim().isEmpty() || 
             password == null || password.trim().isEmpty()) {
+            System.out.println("ERROR: Empty email or password");
             response.sendRedirect("login.html?error=invalid");
             return;
         }
@@ -57,8 +60,9 @@ public class LoginServlet extends HttpServlet {
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             
             String passwordHash = hashPassword(password);
+            System.out.println("Password hash: " + passwordHash);
             
-            String sql = "SELECT user_id, first_name, last_name, user_type, email FROM users WHERE email = ? AND password_hash = ? AND is_active = TRUE";
+            String sql = "SELECT user_id, first_name, last_name, user_type, email, is_active FROM users WHERE email = ? AND password_hash = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             pstmt.setString(2, passwordHash);
@@ -66,11 +70,19 @@ public class LoginServlet extends HttpServlet {
             rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                // Login successful
                 int userId = rs.getInt("user_id");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 String userType = rs.getString("user_type");
+                int isActive = rs.getInt("is_active");
+                
+                System.out.println("User found: " + userId + " | Type: " + userType + " | Active: " + isActive);
+                
+                if (isActive != 1) {
+                    System.out.println("ERROR: User account is not active");
+                    response.sendRedirect("login.html?error=inactive");
+                    return;
+                }
                 
                 // Create session
                 HttpSession session = request.getSession();
@@ -79,7 +91,9 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("lastName", lastName);
                 session.setAttribute("email", email);
                 session.setAttribute("userType", userType);
-                session.setMaxInactiveInterval(30 * 60); // 30 minutes
+                session.setMaxInactiveInterval(30 * 60);
+                
+                System.out.println("Session created successfully");
                 
                 // Update last login time
                 String updateSql = "UPDATE users SET last_login_date = NOW() WHERE user_id = ?";
@@ -90,17 +104,22 @@ public class LoginServlet extends HttpServlet {
                 
                 // Redirect based on user type
                 if ("client".equals(userType)) {
+                    System.out.println("Redirecting to client dashboard");
                     response.sendRedirect("client-dashboard.jsp");
                 } else if ("lawyer".equals(userType)) {
+                    System.out.println("Redirecting to lawyer dashboard");
                     response.sendRedirect("lawyer-dashboard.jsp");
                 } else if ("admin".equals(userType)) {
-                    response.sendRedirect("admin-dashboard.html");
+                    System.out.println("Redirecting to admin dashboard");
+                    session.setAttribute("adminId", userId);
+                    response.sendRedirect("admin-dashboard.jsp");
                 } else {
+                    System.out.println("ERROR: Unknown user type: " + userType);
                     response.sendRedirect("login.html?error=invalid");
                 }
                 
             } else {
-                // Login failed
+                System.out.println("ERROR: No user found with provided credentials");
                 response.sendRedirect("login.html?error=invalid");
             }
             

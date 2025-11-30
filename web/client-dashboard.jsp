@@ -19,6 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <script src="dark-mode.js" defer></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -33,12 +35,18 @@
                     <div class="user-avatar">
                         <%= firstName.charAt(0) %><%= lastName.charAt(0) %>
                     </div>
-                    <div class="user-name">Hello, <%= firstName %> <%= lastName %></div>
+                    <div class="user-name">Hello, <%= firstName %></div>
                     <div class="user-email"><%= email %></div>
+                    <div class="user-type">Client Account</div>
                 </div>
             </div>
 
             <nav class="sidebar-nav">
+                <div class="nav-item" onclick="toggleDarkMode()" style="cursor: pointer;">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                    <span>Dark Mode</span>
+                </div>
+                
                 <a class="nav-item active" onclick="loadPage('client-home.jsp')">
                     <i class="fas fa-home"></i>
                     <span>Dashboard Home</span>
@@ -51,8 +59,12 @@
                     <i class="fas fa-upload"></i>
                     <span>Upload Case</span>
                 </a>
+                <a class="nav-item" onclick="loadPage('client-lawyer-requests.jsp')">
+                    <i class="fas fa-inbox"></i>
+                    <span>Lawyer Requests</span>
+                </a>
                 <a class="nav-item" onclick="loadPage('client-profile.jsp')">
-                    <i class="fas fa-user-edit"></i>
+                    <i class="fas fa-user"></i>
                     <span>Update Profile</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('client-ai-support.jsp')">
@@ -71,7 +83,7 @@
         </main>
     </div>
 
-    <!-- Logout Confirmation Modal -->
+    <!-- Logout Modal -->
     <div id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
             <div style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;">
@@ -80,10 +92,10 @@
             <h2 style="color: #1f2937; margin-bottom: 0.5rem; font-size: 1.5rem;">Logout Confirmation</h2>
             <p style="color: #6b7280; margin-bottom: 2rem;">Are you sure you want to logout?</p>
             <div style="display: flex; gap: 1rem;">
-                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #f9fafb; color: #1f2937; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #f9fafb; color: #1f2937; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                     Cancel
                 </button>
-                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
+                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>

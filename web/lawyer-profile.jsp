@@ -7,23 +7,20 @@
         return;
     }
     
-    // Fetch current user and lawyer data
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    
     String firstName = "";
     String lastName = "";
     String email = "";
     String phone = "";
+    String specialization = "";
+    String barCouncilId = "";
+    String experience = "";
     String city = "";
-    String barNumber = "";
-    String stateLicensed = "";
-    String yearsExperience = "";
-    String primarySpecialization = "";
-    String cityPractice = "";
     String hourlyRate = "";
     String bio = "";
-    
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
     
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -32,28 +29,26 @@
             "root", "root"
         );
         
-        String sql = "SELECT u.first_name, u.last_name, u.email, u.phone_number, u.city, " +
-                     "l.bar_number, l.state_licensed, l.years_experience, l.primary_specialization, " +
-                     "l.city_practice, l.hourly_rate, l.bio " +
-                     "FROM users u INNER JOIN lawyers l ON u.user_id = l.user_id " +
+        String sql = "SELECT u.first_name, u.last_name, u.email, l.phone, l.specialization, " +
+                     "l.bar_council_id, l.experience, l.city, l.hourly_rate, l.bio " +
+                     "FROM users u " +
+                     "LEFT JOIN lawyers l ON u.user_id = l.user_id " +
                      "WHERE u.user_id = ?";
         pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, userId);
         rs = pstmt.executeQuery();
         
         if (rs.next()) {
-            firstName = rs.getString("first_name");
-            lastName = rs.getString("last_name");
-            email = rs.getString("email");
-            phone = rs.getString("phone_number");
-            city = rs.getString("city");
-            barNumber = rs.getString("bar_number");
-            stateLicensed = rs.getString("state_licensed");
-            yearsExperience = rs.getString("years_experience");
-            primarySpecialization = rs.getString("primary_specialization");
-            cityPractice = rs.getString("city_practice");
-            hourlyRate = rs.getString("hourly_rate");
-            bio = rs.getString("bio");
+            firstName = rs.getString("first_name") != null ? rs.getString("first_name") : "";
+            lastName = rs.getString("last_name") != null ? rs.getString("last_name") : "";
+            email = rs.getString("email") != null ? rs.getString("email") : "";
+            phone = rs.getString("phone") != null ? rs.getString("phone") : "";
+            specialization = rs.getString("specialization") != null ? rs.getString("specialization") : "";
+            barCouncilId = rs.getString("bar_council_id") != null ? rs.getString("bar_council_id") : "";
+            experience = rs.getString("experience") != null ? rs.getString("experience") : "";
+            city = rs.getString("city") != null ? rs.getString("city") : "";
+            hourlyRate = rs.getString("hourly_rate") != null ? rs.getString("hourly_rate") : "";
+            bio = rs.getString("bio") != null ? rs.getString("bio") : "";
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -62,6 +57,20 @@
         if (pstmt != null) pstmt.close();
         if (conn != null) conn.close();
     }
+    
+    // Get from session if empty
+    if (firstName.isEmpty()) {
+        firstName = (String) session.getAttribute("firstName");
+        if (firstName == null) firstName = "";
+    }
+    if (lastName.isEmpty()) {
+        lastName = (String) session.getAttribute("lastName");
+        if (lastName == null) lastName = "";
+    }
+    if (email.isEmpty()) {
+        email = (String) session.getAttribute("email");
+        if (email == null) email = "";
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -69,50 +78,121 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <script src="dark-mode.js" defer></script>
     <style>
-        body { margin: 0; padding: 20px; background: #f9fafb; font-family: 'Inter', sans-serif; }
-        .content-header {
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f9fafb;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-header {
             background: white;
-            padding: 1.5rem 2rem;
+            padding: 2rem;
             border-radius: 12px;
             margin-bottom: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .content-header h1 { color: #1f2937; font-size: 1.75rem; margin-bottom: 0.5rem; }
-        .content-header p { color: #6b7280; }
+        
+        .page-header h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .page-header p {
+            color: #6b7280;
+            margin: 0;
+        }
         
         .profile-container {
             max-width: 900px;
             margin: 0 auto;
         }
         
-        .card {
+        .profile-card {
             background: white;
-            padding: 2rem;
             border-radius: 12px;
+            padding: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
-        .card h3 {
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
-            padding-bottom: 1rem;
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
             border-bottom: 2px solid #f9fafb;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-email {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h2 {
+            color: #1f2937;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-section h2 i {
+            color: #ec4899;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
         }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
+        
         .form-group label {
             display: block;
             color: #1f2937;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
         }
-        .required { color: #ef4444; }
+        
         .form-control {
             width: 100%;
             padding: 0.75rem;
@@ -120,257 +200,295 @@
             border-radius: 8px;
             font-size: 0.95rem;
             font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #f5576c;
-        }
-        .form-control:disabled {
-            background: #f9fafb;
-            cursor: not-allowed;
-        }
-        textarea.form-control { min-height: 120px; resize: vertical; }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .btn-section {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .btn-update, .btn-cancel {
-            flex: 1;
-            padding: 0.875rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
+            box-sizing: border-box;
             transition: all 0.3s;
-        }
-        .btn-update {
-            background: #f5576c;
-            color: white;
-        }
-        .btn-update:hover {
-            background: #d93d52;
-            transform: translateY(-2px);
-        }
-        .btn-cancel {
-            background: #f9fafb;
             color: #1f2937;
         }
-        .btn-cancel:hover {
-            background: #e5e7eb;
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
         }
         
-        .alert {
+        .form-control:disabled {
+            background: #f3f4f6;
+            color: #374151;
+            cursor: not-allowed;
+            border-color: #d1d5db;
+            -webkit-text-fill-color: #374151;
+            opacity: 1;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-update {
+            width: 100%;
             padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
-        .alert-success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #86efac;
-        }
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-        .alert i {
-            margin-right: 0.5rem;
-        }
-        
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
             color: white;
-            border-radius: 50%;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
+            gap: 0.5rem;
         }
         
-        @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .password-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .password-card h2 {
+            color: #1f2937;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .password-card h2 i {
+            color: #ef4444;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="page-header">
+        <h1><i class="fas fa-user-edit"></i> Lawyer Profile</h1>
+        <p>Update your professional information and credentials</p>
+    </div>
+
     <div class="profile-container">
-        <div class="content-header">
-            <h1>Lawyer Profile</h1>
-            <p>Manage your professional information and credentials</p>
+        <% if (request.getParameter("updated") != null && request.getParameter("updated").equals("true")) { %>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <span>Profile updated successfully!</span>
+            </div>
+        <% } %>
+        
+        <% if (request.getParameter("error") != null && request.getParameter("error").equals("true")) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Failed to update profile. Please try again.</span>
+            </div>
+        <% } %>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <%= !firstName.isEmpty() && !lastName.isEmpty() ? firstName.substring(0, 1).toUpperCase() + lastName.substring(0, 1).toUpperCase() : "L" %>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">
+                        Adv. <%= !firstName.isEmpty() ? firstName : "Lawyer" %> <%= lastName %>
+                    </div>
+                    <div class="profile-email"><%= email %></div>
+                </div>
+            </div>
+
+            <form action="UpdateLawyerProfileServlet" method="POST">
+                <div class="form-section">
+                    <h2><i class="fas fa-user"></i> Personal Information</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" class="form-control" 
+                                   value="<%= firstName %>" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" class="form-control" 
+                                   value="<%= lastName %>" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               value="<%= email %>" disabled>
+                        <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                            Email cannot be changed
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" 
+                               value="<%= phone %>" placeholder="Enter your phone number" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><i class="fas fa-briefcase"></i> Professional Information</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="specialization">Specialization</label>
+                            <select id="specialization" name="specialization" class="form-control" required>
+                                <option value="">Select Specialization</option>
+                                <option value="Criminal Law" <%= "Criminal Law".equals(specialization) ? "selected" : "" %>>Criminal Law</option>
+                                <option value="Civil Law" <%= "Civil Law".equals(specialization) ? "selected" : "" %>>Civil Law</option>
+                                <option value="Family Law" <%= "Family Law".equals(specialization) ? "selected" : "" %>>Family Law</option>
+                                <option value="Corporate Law" <%= "Corporate Law".equals(specialization) ? "selected" : "" %>>Corporate Law</option>
+                                <option value="Property Law" <%= "Property Law".equals(specialization) ? "selected" : "" %>>Property Law</option>
+                                <option value="Tax Law" <%= "Tax Law".equals(specialization) ? "selected" : "" %>>Tax Law</option>
+                                <option value="Labour Law" <%= "Labour Law".equals(specialization) ? "selected" : "" %>>Labour Law</option>
+                                <option value="Consumer Law" <%= "Consumer Law".equals(specialization) ? "selected" : "" %>>Consumer Law</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="experience">Years of Experience</label>
+                            <input type="number" id="experience" name="experience" class="form-control" 
+                                   value="<%= experience %>" placeholder="Years" required min="0" max="50">
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="barCouncilId">Bar Council ID</label>
+                            <input type="text" id="barCouncilId" name="barCouncilId" class="form-control" 
+                                   value="<%= barCouncilId %>" placeholder="Enter your Bar Council ID" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" class="form-control" 
+                                   value="<%= city %>" placeholder="Enter your city" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hourlyRate">Consultation Fee (per hour)</label>
+                        <input type="text" id="hourlyRate" name="hourlyRate" class="form-control" 
+                               value="<%= hourlyRate %>" placeholder="e.g., Rs. 2000/hour" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bio">Professional Bio</label>
+                        <textarea id="bio" name="bio" class="form-control" 
+                                  placeholder="Tell clients about your experience, expertise, and achievements..."><%= bio %></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
         </div>
 
-        <div id="alertBox" class="alert"></div>
+        <div class="password-card">
+            <h2><i class="fas fa-lock"></i> Change Password</h2>
+            
+            <% if (request.getParameter("passwordUpdated") != null && request.getParameter("passwordUpdated").equals("true")) { %>
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Password changed successfully!</span>
+                </div>
+            <% } %>
+            
+            <% if (request.getParameter("passwordError") != null) { %>
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span><%= request.getParameter("passwordError") %></span>
+                </div>
+            <% } %>
 
-        <div class="card">
-            <div class="profile-avatar">
-                <%= firstName.charAt(0) %><%= lastName.charAt(0) %>
-            </div>
-            
-            <h3>Personal Information</h3>
-            
-            <form id="profileForm" action="UpdateLawyerProfileServlet" method="POST">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name <span class="required">*</span></label>
-                        <input type="text" id="firstName" name="firstName" class="form-control" 
-                               value="<%= firstName %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name <span class="required">*</span></label>
-                        <input type="text" id="lastName" name="lastName" class="form-control" 
-                               value="<%= lastName %>" required>
-                    </div>
+            <form action="ChangePasswordServlet" method="POST">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" 
+                           class="form-control" required placeholder="Enter current password">
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-control" 
-                           value="<%= email %>" disabled>
-                    <small style="color: #6b7280; font-size: 0.85rem;">Email cannot be changed</small>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone Number <span class="required">*</span></label>
-                        <input type="tel" id="phone" name="phone" class="form-control" 
-                               value="<%= phone %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="city">City <span class="required">*</span></label>
-                        <input type="text" id="city" name="city" class="form-control" 
-                               value="<%= city %>" required>
-                    </div>
-                </div>
-                
-                <h3 style="margin-top: 2rem;">Professional Details</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="barNumber">Bar Council Number <span class="required">*</span></label>
-                        <input type="text" id="barNumber" name="barNumber" class="form-control" 
-                               value="<%= barNumber %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="stateLicensed">State Licensed <span class="required">*</span></label>
-                        <input type="text" id="stateLicensed" name="stateLicensed" class="form-control" 
-                               value="<%= stateLicensed %>" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="yearsExperience">Years of Experience <span class="required">*</span></label>
-                        <select id="yearsExperience" name="yearsExperience" class="form-control" required>
-                            <option value="">Select Experience</option>
-                            <option value="0-2 years" <%= "0-2 years".equals(yearsExperience) ? "selected" : "" %>>0-2 years</option>
-                            <option value="3-5 years" <%= "3-5 years".equals(yearsExperience) ? "selected" : "" %>>3-5 years</option>
-                            <option value="6-10 years" <%= "6-10 years".equals(yearsExperience) ? "selected" : "" %>>6-10 years</option>
-                            <option value="10+ years" <%= "10+ years".equals(yearsExperience) ? "selected" : "" %>>10+ years</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="primarySpecialization">Primary Specialization <span class="required">*</span></label>
-                        <select id="primarySpecialization" name="primarySpecialization" class="form-control" required>
-                            <option value="">Select Specialization</option>
-                            <option value="Criminal Law" <%= "Criminal Law".equals(primarySpecialization) ? "selected" : "" %>>Criminal Law</option>
-                            <option value="Civil Law" <%= "Civil Law".equals(primarySpecialization) ? "selected" : "" %>>Civil Law</option>
-                            <option value="Family Law" <%= "Family Law".equals(primarySpecialization) ? "selected" : "" %>>Family Law</option>
-                            <option value="Corporate Law" <%= "Corporate Law".equals(primarySpecialization) ? "selected" : "" %>>Corporate Law</option>
-                            <option value="Property Law" <%= "Property Law".equals(primarySpecialization) ? "selected" : "" %>>Property Law</option>
-                            <option value="Tax Law" <%= "Tax Law".equals(primarySpecialization) ? "selected" : "" %>>Tax Law</option>
-                            <option value="Labour Law" <%= "Labour Law".equals(primarySpecialization) ? "selected" : "" %>>Labour Law</option>
-                            <option value="Intellectual Property" <%= "Intellectual Property".equals(primarySpecialization) ? "selected" : "" %>>Intellectual Property</option>
-                            <option value="Consumer Law" <%= "Consumer Law".equals(primarySpecialization) ? "selected" : "" %>>Consumer Law</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="cityPractice">City of Practice <span class="required">*</span></label>
-                        <input type="text" id="cityPractice" name="cityPractice" class="form-control" 
-                               value="<%= cityPractice %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hourlyRate">Hourly Rate <span class="required">*</span></label>
-                        <select id="hourlyRate" name="hourlyRate" class="form-control" required>
-                            <option value="">Select Rate</option>
-                            <option value="Rs.500-1000/hour" <%= "Rs.500-1000/hour".equals(hourlyRate) ? "selected" : "" %>>Rs.500-1000/hour</option>
-                            <option value="Rs.1000-2000/hour" <%= "Rs.1000-2000/hour".equals(hourlyRate) ? "selected" : "" %>>Rs.1000-2000/hour</option>
-                            <option value="Rs.2000-5000/hour" <%= "Rs.2000-5000/hour".equals(hourlyRate) ? "selected" : "" %>>Rs.2000-5000/hour</option>
-                            <option value="Rs.5000+/hour" <%= "Rs.5000+/hour".equals(hourlyRate) ? "selected" : "" %>>Rs.5000+/hour</option>
-                        </select>
-                    </div>
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" 
+                           class="form-control" required placeholder="Enter new password" minlength="6">
                 </div>
                 
                 <div class="form-group">
-                    <label for="bio">Professional Bio</label>
-                    <textarea id="bio" name="bio" class="form-control" 
-                              placeholder="Describe your legal expertise, achievements, and approach..."><%= bio != null ? bio : "" %></textarea>
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" 
+                           class="form-control" required placeholder="Confirm new password" minlength="6">
                 </div>
-                
-                <div class="btn-section">
-                    <button type="button" class="btn-cancel" onclick="resetForm()">
-                        <i class="fas fa-undo"></i> Reset
-                    </button>
-                    <button type="submit" class="btn-update">
-                        <i class="fas fa-save"></i> Update Profile
-                    </button>
-                </div>
+
+                <button type="submit" class="btn-update" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
             </form>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
-            var urlParams = new URLSearchParams(window.location.search);
+        // Password match validation
+        document.querySelector('form[action="ChangePasswordServlet"]').addEventListener('submit', function(e) {
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
             
-            if (urlParams.get('success') === 'true') {
-                showAlert('Profile updated successfully!', 'success');
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else if (urlParams.get('error') === 'failed') {
-                showAlert('Update failed. Please try again.', 'error');
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        };
-
-        function showAlert(message, type) {
-            var alertBox = document.getElementById('alertBox');
-            alertBox.className = 'alert alert-' + type;
-            alertBox.style.display = 'block';
-            
-            if (type === 'success') {
-                alertBox.innerHTML = '<i class="fas fa-check-circle"></i>' + message;
-            } else {
-                alertBox.innerHTML = '<i class="fas fa-exclamation-circle"></i>' + message;
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New passwords do not match!');
+                return false;
             }
             
-            setTimeout(function() {
-                alertBox.style.display = 'none';
-            }, 5000);
-        }
-
-        function resetForm() {
-            if (confirm('Are you sure you want to reset all changes?')) {
-                document.getElementById('profileForm').reset();
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                return false;
             }
-        }
+        });
     </script>
 </body>
 </html>

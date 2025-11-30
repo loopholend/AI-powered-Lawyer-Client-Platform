@@ -76,6 +76,58 @@
         <servlet-name>GetClientCasesServlet</servlet-name>
         <servlet-class>GetClientCasesServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>RateLawyerServlet</servlet-name>
+        <servlet-class>RateLawyerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LawyerRequestCaseServlet</servlet-name>
+        <servlet-class>LawyerRequestCaseServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetCaseRequestsServlet</servlet-name>
+        <servlet-class>GetCaseRequestsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AcceptLawyerRequestServlet</servlet-name>
+        <servlet-class>AcceptLawyerRequestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAllCaseRequestsServlet</servlet-name>
+        <servlet-class>GetAllCaseRequestsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RejectLawyerRequestServlet</servlet-name>
+        <servlet-class>RejectLawyerRequestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetPendingLawyersServlet</servlet-name>
+        <servlet-class>GetPendingLawyersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>VerifyLawyerServlet</servlet-name>
+        <servlet-class>VerifyLawyerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAllUsersServlet</servlet-name>
+        <servlet-class>GetAllUsersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteUserServlet</servlet-name>
+        <servlet-class>DeleteUserServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAllCasesServlet</servlet-name>
+        <servlet-class>GetAllCasesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCaseServlet</servlet-name>
+        <servlet-class>DeleteCaseServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetUserCasesServlet</servlet-name>
+        <servlet-class>GetUserCasesServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ClientRegisterServlet</servlet-name>
         <url-pattern>/ClientRegisterServlet</url-pattern>
@@ -151,6 +203,58 @@
     <servlet-mapping>
         <servlet-name>GetClientCasesServlet</servlet-name>
         <url-pattern>/GetClientCasesServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RateLawyerServlet</servlet-name>
+        <url-pattern>/RateLawyerServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LawyerRequestCaseServlet</servlet-name>
+        <url-pattern>/LawyerRequestCaseServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetCaseRequestsServlet</servlet-name>
+        <url-pattern>/GetCaseRequestsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AcceptLawyerRequestServlet</servlet-name>
+        <url-pattern>/AcceptLawyerRequestServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAllCaseRequestsServlet</servlet-name>
+        <url-pattern>/GetAllCaseRequestsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RejectLawyerRequestServlet</servlet-name>
+        <url-pattern>/RejectLawyerRequestServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetPendingLawyersServlet</servlet-name>
+        <url-pattern>/GetPendingLawyersServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VerifyLawyerServlet</servlet-name>
+        <url-pattern>/VerifyLawyerServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAllUsersServlet</servlet-name>
+        <url-pattern>/GetAllUsersServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUserServlet</servlet-name>
+        <url-pattern>/DeleteUserServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAllCasesServlet</servlet-name>
+        <url-pattern>/GetAllCasesServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCaseServlet</servlet-name>
+        <url-pattern>/DeleteCaseServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetUserCasesServlet</servlet-name>
+        <url-pattern>/GetUserCasesServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

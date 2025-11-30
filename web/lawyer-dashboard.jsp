@@ -21,9 +21,12 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         :root {
-            --primary-color: #f5576c;
-            --secondary-color: #d93d52;
-            --gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --lawyer-primary: #ec4899;
+            --lawyer-secondary: #db2777;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #ec4899 0%, #db2777 100%) !important;
         }
     </style>
 </head>
@@ -32,19 +35,17 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-balance-scale"></i>
+                    <i class="fas fa-gavel"></i>
                     <span>LegalConnect</span>
                 </div>
                 
                 <div class="user-info">
                     <div class="user-avatar">
-                        <%= firstName.charAt(0) %><%= lastName.charAt(0) %>
+                        <%= firstName.substring(0, 1).toUpperCase() %><%= lastName.substring(0, 1).toUpperCase() %>
                     </div>
                     <div class="user-name">Hello, Adv. <%= firstName %></div>
                     <div class="user-email"><%= email %></div>
-                    <div style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; margin-top: 0.5rem; display: inline-block;">
-                        Verified Lawyer
-                    </div>
+                    <div class="user-type">Verified Lawyer</div>
                 </div>
             </div>
 
@@ -54,7 +55,7 @@
                     <span>Dashboard Home</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-new-cases.jsp')">
-                    <i class="fas fa-folder-plus"></i>
+                    <i class="fas fa-folder"></i>
                     <span>New Cases</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-active-cases.jsp')">
@@ -62,7 +63,7 @@
                     <span>Active Cases</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-profile.jsp')">
-                    <i class="fas fa-user-tie"></i>
+                    <i class="fas fa-user"></i>
                     <span>Lawyer Info</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-ai-support.jsp')">
@@ -81,7 +82,7 @@
         </main>
     </div>
 
-    <!-- Logout Confirmation Modal -->
+    <!-- Logout Modal -->
     <div id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
             <div style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;">
@@ -90,10 +91,10 @@
             <h2 style="color: #1f2937; margin-bottom: 0.5rem; font-size: 1.5rem;">Logout Confirmation</h2>
             <p style="color: #6b7280; margin-bottom: 2rem;">Are you sure you want to logout?</p>
             <div style="display: flex; gap: 1rem;">
-                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #f9fafb; color: #1f2937; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #f9fafb; color: #1f2937; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                     Cancel
                 </button>
-                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
+                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
