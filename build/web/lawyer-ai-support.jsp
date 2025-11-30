@@ -272,7 +272,7 @@
     </script>
     <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
-    const API_KEY = "YOUR_GOOGLE_API_KEY_HERE";
+    const API_KEY = "AIzaSyBEXfMRXVqFd1iN_uQkAHVR2B57I9K81uc";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
     let currentMode = 'general';
