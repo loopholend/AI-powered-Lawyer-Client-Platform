@@ -148,42 +148,11 @@
             return document.getElementById('caseSelect').value;
         }
 
-        function isGreeting(prompt) {
-            var p = (prompt || '').trim().toLowerCase();
-            return p === 'hi' || p === 'hello' || p === 'hey' || p === 'hii' || p === 'namaste';
-        }
-
         function buildFriendlyReply(analysis) {
             if (!analysis) return 'Sorry, I could not process that. Please try again.';
-
-            if (analysis.summary && analysis.summary.toLowerCase().indexOf("i don't know from provided documents") !== -1) {
-                var reason = analysis.insufficient_evidence_reason || 'I need more details for case-specific judgment.';
-                return 'I need a bit more case detail to answer this reliably.\n\n' +
-                       'What you can do next:\n' +
-                       '1) Share a short timeline of events\n' +
-                       '2) Mention what happened, when, and with whom\n' +
-                       '3) Ask a specific question (for example: "What documents should I keep ready?")\n\n' +
-                       'Reason: ' + reason;
-            }
-
-            var lines = [];
-            lines.push(analysis.summary || 'Here is what I found from your case details.');
-
-            if (Array.isArray(analysis.proof_required) && analysis.proof_required.length > 0) {
-                lines.push('Helpful documents to keep ready:\n- ' + analysis.proof_required.slice(0, 3).join('\n- '));
-            }
-
-            if (Array.isArray(analysis.lawyer_recommendations) && analysis.lawyer_recommendations.length > 0) {
-                var names = analysis.lawyer_recommendations.slice(0, 3).map(function (r) { return r.name; }).filter(Boolean);
-                if (names.length > 0) {
-                    lines.push('Suggested lawyers for this case: ' + names.join(', ') + '.');
-                }
-            }
-
-            if (analysis.disclaimer) {
-                lines.push('Note: ' + analysis.disclaimer);
-            }
-            return lines.join('\n\n');
+            var text = String(analysis.assistant_reply || '').trim();
+            if (text) return text;
+            return String(analysis.summary || 'I understood your message. Please share a bit more detail so I can help better.');
         }
 
         function renderList(items) {
@@ -267,11 +236,6 @@
             addMessage('user', prompt);
             promptEl.value = '';
 
-            if (isGreeting(prompt)) {
-                addMessage('ai', 'Hello! I can help with:\n- next legal steps\n- important documents\n- understanding case status\n- finding suitable lawyers');
-                return;
-            }
-
             if (!caseId) {
                 addMessage('ai', 'Please select a case first, then I can help you.');
                 return;
@@ -302,7 +266,7 @@
                 } else if (data.mode === 'grounded-insufficient') {
                     setStatus('Need more details for stronger case-specific answers.', 'warn');
                 } else {
-                    setStatus('Using backup AI mode.', 'warn');
+                    setStatus('Gemini is unavailable; using backup mode.', 'warn');
                 }
             } catch (err) {
                 setStatus('Message failed. Please try again.', 'warn');

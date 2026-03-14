@@ -451,6 +451,7 @@ public class AiSupportServlet extends HttpServlet {
 
         prompt.append("Required JSON schema:\n");
         prompt.append("{\n");
+        prompt.append("  \"assistant_reply\": \"string\",\n");
         prompt.append("  \"summary\": \"string\",\n");
         prompt.append("  \"applicable_rules\": [\"string\"],\n");
         prompt.append("  \"case_strength\": {\"level\":\"low|medium|high\",\"reasoning\":[\"string\"]},\n");
@@ -464,6 +465,8 @@ public class AiSupportServlet extends HttpServlet {
         prompt.append("User question: ").append(userPrompt).append("\n\n");
         prompt.append("Strict evidence gate required: ").append(strictEvidenceGate).append("\n");
         prompt.append("Evidence appears sufficient: ").append(enoughEvidence).append("\n\n");
+        prompt.append("assistant_reply should be natural conversational text directly answering the user question.\n");
+        prompt.append("Even for short/unclear/garbage prompts, respond briefly and helpfully without inventing case facts.\n\n");
 
         prompt.append("Case context:\n");
         prompt.append("- case_id: ").append(ctx.caseId).append("\n");
@@ -568,6 +571,7 @@ public class AiSupportServlet extends HttpServlet {
         Map<String, Object> analysis = new LinkedHashMap<String, Object>();
 
         String summary = safe(asString(modelJson.get("summary")));
+        String assistantReply = safe(asString(modelJson.get("assistant_reply")));
         List<String> rules = asStringList(modelJson.get("applicable_rules"));
         List<String> proof = asStringList(modelJson.get("proof_required"));
         int confidence = clampInt(asInteger(modelJson.get("confidence"), 40), 0, 100);
@@ -583,6 +587,7 @@ public class AiSupportServlet extends HttpServlet {
 
         if ((strictEvidenceGate && insufficient) || summary.isEmpty()) {
             summary = "I don't know from provided documents.";
+            assistantReply = "I don't know from provided documents.";
             if (insufficientReason.isEmpty()) {
                 insufficientReason = "Evidence in provided case details/documents is not enough for reliable analysis.";
             }
@@ -598,6 +603,12 @@ public class AiSupportServlet extends HttpServlet {
             confidence = Math.min(confidence, 50);
         }
 
+        if (assistantReply.isEmpty()) {
+            assistantReply = summary.isEmpty()
+                ? "I understood your message, but I need a bit more detail to help clearly."
+                : summary;
+        }
+
         if (rules.isEmpty()) {
             rules = splitKnowledgeLines(legalKnowledge);
         }
@@ -610,6 +621,7 @@ public class AiSupportServlet extends HttpServlet {
         strength.put("reasoning", strengthReasons);
 
         analysis.put("summary", summary);
+        analysis.put("assistant_reply", assistantReply);
         analysis.put("applicable_rules", rules);
         analysis.put("case_strength", strength);
         analysis.put("proof_required", proof);
@@ -658,7 +670,10 @@ public class AiSupportServlet extends HttpServlet {
             strengthReasoning.add("Limited document text extraction reduces certainty.");
         }
 
-        String summary = buildPromptAlignedSummary(ctx.caseType, userPrompt);
+        String summary = "Grounded response from selected case context and available records.";
+        String assistantReply = "I understood: \"" + truncate(userPrompt, 180) + "\". " +
+            "Based on current records, I can give guidance and next steps. " +
+            "For higher confidence, add key facts or upload readable supporting documents.";
         int confidence = clampInt(30 + (evidencePoints * 12), 20, 85);
         boolean insufficient = evidencePoints < 3;
         String insufficientReason = insufficient
@@ -666,10 +681,10 @@ public class AiSupportServlet extends HttpServlet {
             : "";
         if (insufficient && strictEvidenceGate) {
             summary = "I don't know from provided documents.";
+            assistantReply = "I don't know from provided documents.";
             confidence = Math.min(confidence, 35);
             level = "low";
         } else if (insufficient) {
-            summary = "I can help with procedural guidance, but not final case-specific conclusions yet from the current details.";
             confidence = Math.min(confidence, 45);
             insufficientReason = "Share clearer facts/timeline in the prompt or attach readable case documents to improve case-specific output.";
         }
@@ -678,6 +693,7 @@ public class AiSupportServlet extends HttpServlet {
         strength.put("reasoning", strengthReasoning);
 
         analysis.put("summary", summary);
+        analysis.put("assistant_reply", assistantReply);
         analysis.put("applicable_rules", splitKnowledgeLines(legalKnowledge));
         analysis.put("case_strength", strength);
         analysis.put("proof_required", defaultProofList(ctx.caseType, userPrompt));
@@ -702,6 +718,7 @@ public class AiSupportServlet extends HttpServlet {
         strength.put("reasoning", reasons);
 
         analysis.put("summary", "I don't know from provided documents.");
+        analysis.put("assistant_reply", "I don't know from provided documents.");
         analysis.put("applicable_rules", splitKnowledgeLines(legalKnowledge));
         analysis.put("case_strength", strength);
         analysis.put("proof_required", defaultProofList(ctx.caseType, ""));
@@ -740,34 +757,6 @@ public class AiSupportServlet extends HttpServlet {
             proof.add("Performance, delivery, payment, and breach notice evidence.");
         }
         return proof;
-    }
-
-    private String buildPromptAlignedSummary(String caseType, String userPrompt) {
-        String prompt = safe(userPrompt);
-        String lower = prompt.toLowerCase(Locale.ENGLISH);
-        String caseTypeLower = safe(caseType).toLowerCase(Locale.ENGLISH);
-
-        if (containsAny(lower, "document", "documents", "proof", "evidence", "required")) {
-            if (containsAny(lower, "rental", "rent", "lease", "tenant", "landlord")) {
-                return "You asked about rental agreement documents. Here is a practical checklist you can prepare first.";
-            }
-            return "You asked what documents are needed. Here is a practical checklist based on your question and case context.";
-        }
-        if (containsAny(lower, "next step", "next steps", "what should i do", "what to do")) {
-            return "Here are clear next steps you can follow right now for this case.";
-        }
-        if (containsAny(lower, "lawyer", "recommend")) {
-            return "Here are suitable lawyer suggestions and why they match your request.";
-        }
-        if (containsAny(lower, "summary", "summarize")) {
-            return "Here is a simple summary of your case details.";
-        }
-
-        String summary = "Here is a grounded response based on your selected case details.";
-        if (containsAny(lower, "rental", "rent", "lease") && !containsAny(caseTypeLower, "rental", "rent", "lease", "tenant", "landlord")) {
-            summary += " Note: your selected case type appears different from rental; select the matching case for better accuracy.";
-        }
-        return summary;
     }
 
     private String extractFirstJsonObject(String text) {

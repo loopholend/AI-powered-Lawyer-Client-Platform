@@ -140,33 +140,11 @@
             return document.getElementById('caseSelect').value;
         }
 
-        function isGreeting(prompt) {
-            var p = (prompt || '').trim().toLowerCase();
-            return p === 'hi' || p === 'hello' || p === 'hey' || p === 'hii' || p === 'namaste';
-        }
-
         function buildFriendlyReply(analysis) {
             if (!analysis) return 'Sorry, I could not process that request.';
-            var lines = [];
-
-            if (analysis.summary && analysis.summary.toLowerCase().indexOf("i don't know from provided documents") !== -1) {
-                lines.push('I need a little more factual detail before giving case-specific conclusions.');
-                lines.push('Try sharing:\n- event timeline\n- key documents available\n- exact issue you want addressed');
-                return lines.join('\n\n');
-            }
-
-            lines.push(analysis.summary || 'Here is a grounded draft-oriented response.');
-
-            if (Array.isArray(analysis.applicable_rules) && analysis.applicable_rules.length > 0) {
-                lines.push('Relevant rule hints:\n- ' + analysis.applicable_rules.slice(0, 3).join('\n- '));
-            }
-            if (Array.isArray(analysis.proof_required) && analysis.proof_required.length > 0) {
-                lines.push('Evidence checklist:\n- ' + analysis.proof_required.slice(0, 4).join('\n- '));
-            }
-            if (analysis.disclaimer) {
-                lines.push('Note: ' + analysis.disclaimer);
-            }
-            return lines.join('\n\n');
+            var text = String(analysis.assistant_reply || '').trim();
+            if (text) return text;
+            return String(analysis.summary || 'I understood your request. Please add more details for a better response.');
         }
 
         function renderList(items) {
@@ -231,11 +209,6 @@
             addMessage('user', prompt);
             promptEl.value = '';
 
-            if (isGreeting(prompt)) {
-                addMessage('ai', 'Hello! Tell me what you need:\n- issue framing\n- evidence gap analysis\n- hearing checklist\n- procedural next steps');
-                return;
-            }
-
             if (!caseId) {
                 addMessage('ai', 'Please select an active case first.');
                 return;
@@ -266,7 +239,7 @@
                 } else if (data.mode === 'grounded-insufficient') {
                     setStatus('Need more case facts for stronger case-specific output.', 'warn');
                 } else {
-                    setStatus('Using backup AI mode.', 'warn');
+                    setStatus('Gemini is unavailable; using backup mode.', 'warn');
                 }
             } catch (err) {
                 setStatus('Message failed. Please try again.', 'warn');
