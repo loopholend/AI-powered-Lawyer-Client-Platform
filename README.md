@@ -74,15 +74,31 @@ CREATE DATABASE legalconnect_db;
 
 ### 2) AI support (optional)
 
-Set your key in `src/java/AIConfig.java`:
+Configure Gemini via environment variables (or JVM system properties):
 
-```java
-public static final String API_KEY = "";
-public static final String MODEL = "gpt-4o-mini";
-public static final String ENDPOINT = "https://api.openai.com/v1/responses";
+```bash
+# Linux/macOS
+export GEMINI_API_KEY="your_gemini_api_key"
+export GEMINI_MODEL="gemini-2.0-flash"
+export GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models"
 ```
 
-If `API_KEY` is empty, the app automatically returns built-in fallback responses.
+```powershell
+# Windows PowerShell (current session)
+$env:GEMINI_API_KEY="your_gemini_api_key"
+$env:GEMINI_MODEL="gemini-2.0-flash"
+$env:GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models"
+```
+
+If `GEMINI_API_KEY` is empty, the app automatically uses a grounded fallback mode.
+
+AI analysis now includes:
+
+- Grounded case summarization (case fields + extractable document text)
+- Applicable rule hints from built-in legal knowledge notes
+- Case strength and proof-required checklist
+- Confidence + insufficient-evidence gate with strict response behavior
+- Lawyer recommendation scoring (city, specialization, ratings, experience, similarity)
 
 ## Running the App
 
