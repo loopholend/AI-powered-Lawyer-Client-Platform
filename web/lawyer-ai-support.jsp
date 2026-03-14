@@ -11,72 +11,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Case Assistant - Lawyer</title>
+    <title>AI Support - Lawyer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; color: #111827; }
-        .content-header { background: #FFFFFF; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #E5E7EB; }
-        .content-header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
+        .content-header { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+        .content-header h1 { margin: 0 0 0.4rem; font-size: 1.65rem; }
         .content-header p { margin: 0; color: #6b7280; }
-        .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-        .field label { display: block; font-size: 0.9rem; margin-bottom: 0.35rem; color: #374151; font-weight: 600; }
-        .field input, .field select, .field textarea {
+        .card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+        .controls { display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; align-items: end; }
+        .field label { display: block; margin-bottom: 0.35rem; font-size: 0.9rem; font-weight: 600; color: #374151; }
+        .field select, .field input, .chat-input {
             width: 100%; border: 1px solid #D1D5DB; border-radius: 8px; padding: 0.65rem 0.8rem; font-family: inherit; font-size: 0.95rem;
         }
-        .field textarea { min-height: 150px; resize: vertical; }
-        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #C9A227; }
+        .field select:focus, .field input:focus, .chat-input:focus { outline: none; border-color: #C9A227; }
+        .status { border: 1px solid #E5E7EB; border-radius: 8px; padding: 0.55rem 0.7rem; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .status.ok { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+        .status.warn { background: #FFFBEB; color: #92400E; border-color: #FCD34D; }
+        .chat-box { border: 1px solid #E5E7EB; border-radius: 10px; background: #FAFBFC; min-height: 280px; max-height: 420px; overflow-y: auto; padding: 0.75rem; }
+        .msg-row { display: flex; margin: 0.45rem 0; }
+        .msg-row.user { justify-content: flex-end; }
+        .msg-row.ai { justify-content: flex-start; }
+        .msg {
+            max-width: 82%; border-radius: 12px; padding: 0.7rem 0.8rem; white-space: pre-wrap; word-break: break-word; line-height: 1.4;
+        }
+        .msg.user { background: #0B1F3A; color: #fff; border-bottom-right-radius: 4px; }
+        .msg.ai { background: #fff; color: #111827; border: 1px solid #E5E7EB; border-bottom-left-radius: 4px; }
+        .quick-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+        .chip { border: 1px solid #E5E7EB; background: #fff; color: #111827; border-radius: 999px; padding: 0.4rem 0.7rem; font-size: 0.82rem; cursor: pointer; }
+        .chip:hover { border-color: #C9A227; color: #A9861F; }
+        .input-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; margin-top: 0.8rem; }
+        .chat-input { min-height: 56px; resize: vertical; }
         .btn { background: #C9A227; color: #fff; border: none; border-radius: 8px; padding: 0.75rem 1rem; font-weight: 600; cursor: pointer; }
         .btn:hover { background: #A9861F; }
-        .btn-alt { background: #0B1F3A; }
-        .btn-alt:hover { background: #09172C; }
-        .badge { margin-bottom: 0.8rem; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.9rem; border: 1px solid #E5E7EB; }
-        .badge-ok { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
-        .badge-warning { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
-        .panel-title { margin: 0 0 0.6rem; font-size: 1.1rem; }
-        .muted { color: #6B7280; font-size: 0.9rem; }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .muted { color: #6B7280; font-size: 0.88rem; }
+        .details-toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #0B1F3A; font-weight: 600; }
+        .details-panel { display: none; margin-top: 0.8rem; border-top: 1px dashed #D1D5DB; padding-top: 0.8rem; }
         .list { margin: 0; padding-left: 1.1rem; }
-        .list li { margin-bottom: 0.4rem; }
-        .strength-low { color: #B91C1C; }
-        .strength-medium { color: #92400E; }
-        .strength-high { color: #065F46; }
-        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .list li { margin-bottom: 0.35rem; }
+        @media (max-width: 900px) {
+            .controls { grid-template-columns: 1fr; }
+            .input-row { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div class="content-header">
-        <h1><i class="fas fa-robot"></i> AI Case Assistant</h1>
-        <p>Grounded legal drafting support using selected case details. Documents improve accuracy but are optional.</p>
+        <h1><i class="fas fa-comments"></i> AI Drafting Support</h1>
+        <p>Ask in plain language. You’ll get conversation-style drafting help from selected case details.</p>
     </div>
 
     <div class="card">
-        <div id="modeStatus" class="badge badge-ok">Ready. Pick a case and request analysis.</div>
-        <div class="grid">
+        <div id="modeStatus" class="status ok">Ready. Select an active case and start chatting.</div>
+        <div class="controls">
             <div class="field">
-                <label for="caseSelect">Active Case</label>
+                <label for="caseSelect">Active case</label>
                 <select id="caseSelect"></select>
             </div>
-            <div class="field">
-                <label for="caseIdManual">Or enter Case ID</label>
-                <input type="number" id="caseIdManual" placeholder="Example: 101">
-            </div>
+            <details class="field">
+                <summary class="muted">Use manual case ID (advanced)</summary>
+                <input type="number" id="caseIdManual" placeholder="Example: 101" style="margin-top:0.45rem;">
+            </details>
         </div>
-        <div class="field" style="margin-top:0.8rem;">
-            <label for="prompt">Request</label>
-            <textarea id="prompt" placeholder="Example: Summarize this case, identify applicable rules, estimate case strength, and list proof required."></textarea>
-        </div>
-        <div style="margin-top:0.8rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
-            <button id="analyzeBtn" class="btn" onclick="analyzeCase()">Generate Analysis</button>
-            <button class="btn btn-alt" onclick="insertTemplate()">Insert Template</button>
-        </div>
-        <p class="muted" style="margin-top:0.6rem;">If document text is missing, AI still provides procedural guidance from available case details.</p>
     </div>
 
-    <div class="card" id="analysisCard" style="display:none;">
-        <h3 class="panel-title">Analysis Output</h3>
-        <div id="analysisContent"></div>
+    <div class="card">
+        <div id="chatBox" class="chat-box"></div>
+
+        <div class="quick-row">
+            <button class="chip" onclick="setPrompt('Summarize this case for first hearing preparation.')">Hearing summary</button>
+            <button class="chip" onclick="setPrompt('List missing facts and evidence gaps in this case.')">Evidence gaps</button>
+            <button class="chip" onclick="setPrompt('Give procedural next steps for this case.')">Procedural steps</button>
+        </div>
+
+        <div class="input-row">
+            <textarea id="prompt" class="chat-input" placeholder="Type your request..."></textarea>
+            <button id="sendBtn" class="btn" onclick="sendMessage()">Send</button>
+        </div>
+        <p class="muted" style="margin-top:0.55rem;">Tip: short instructions work best (example: “prepare checklist for tomorrow hearing”).</p>
+    </div>
+
+    <div class="card">
+        <span class="details-toggle" onclick="toggleDetails()"><i class="fas fa-chevron-right" id="toggleIcon"></i> Show detailed analysis</span>
+        <div id="detailsPanel" class="details-panel">
+            <div id="analysisContent" class="muted">No analysis yet.</div>
+        </div>
     </div>
 
     <script>
@@ -91,14 +113,85 @@
 
         function setStatus(message, type) {
             var el = document.getElementById('modeStatus');
-            el.className = 'badge ' + (type === 'warning' ? 'badge-warning' : 'badge-ok');
+            el.className = 'status ' + (type === 'warn' ? 'warn' : 'ok');
             el.textContent = message;
         }
 
-        function insertTemplate() {
-            document.getElementById('prompt').value =
-                'Using only case records, provide JSON with summary, applicable_rules, case_strength, and proof_required. ' +
-                'If evidence is missing, return: I don\'t know from provided documents.';
+        function addMessage(role, text) {
+            var box = document.getElementById('chatBox');
+            var row = document.createElement('div');
+            row.className = 'msg-row ' + (role === 'user' ? 'user' : 'ai');
+            var bubble = document.createElement('div');
+            bubble.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+            bubble.textContent = text;
+            row.appendChild(bubble);
+            box.appendChild(row);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function setPrompt(text) {
+            document.getElementById('prompt').value = text;
+            document.getElementById('prompt').focus();
+        }
+
+        function getSelectedCaseId() {
+            var manual = document.getElementById('caseIdManual').value.trim();
+            if (manual) return manual;
+            return document.getElementById('caseSelect').value;
+        }
+
+        function isGreeting(prompt) {
+            var p = (prompt || '').trim().toLowerCase();
+            return p === 'hi' || p === 'hello' || p === 'hey' || p === 'hii' || p === 'namaste';
+        }
+
+        function buildFriendlyReply(analysis) {
+            if (!analysis) return 'Sorry, I could not process that request.';
+            var lines = [];
+
+            if (analysis.summary && analysis.summary.toLowerCase().indexOf("i don't know from provided documents") !== -1) {
+                lines.push('I need a little more factual detail before giving case-specific conclusions.');
+                lines.push('Try sharing:\n- event timeline\n- key documents available\n- exact issue you want addressed');
+                return lines.join('\n\n');
+            }
+
+            lines.push(analysis.summary || 'Here is a grounded draft-oriented response.');
+
+            if (Array.isArray(analysis.applicable_rules) && analysis.applicable_rules.length > 0) {
+                lines.push('Relevant rule hints:\n- ' + analysis.applicable_rules.slice(0, 3).join('\n- '));
+            }
+            if (Array.isArray(analysis.proof_required) && analysis.proof_required.length > 0) {
+                lines.push('Evidence checklist:\n- ' + analysis.proof_required.slice(0, 4).join('\n- '));
+            }
+            if (analysis.disclaimer) {
+                lines.push('Note: ' + analysis.disclaimer);
+            }
+            return lines.join('\n\n');
+        }
+
+        function renderList(items) {
+            if (!Array.isArray(items) || items.length === 0) return '<p class="muted">No items.</p>';
+            return '<ul class="list">' + items.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>';
+        }
+
+        function renderAnalysis(analysis) {
+            var html = '';
+            html += '<p><strong>Summary:</strong> ' + escapeHtml(analysis.summary || '') + '</p>';
+            html += '<p><strong>Confidence:</strong> ' + escapeHtml(String(analysis.confidence || 0)) + '%</p>';
+            html += '<p><strong>Applicable Rules</strong></p>' + renderList(analysis.applicable_rules || []);
+            html += '<p><strong>Proof Required</strong></p>' + renderList(analysis.proof_required || []);
+            if (analysis.insufficient_evidence) {
+                html += '<p class="muted"><strong>Evidence Gap:</strong> ' + escapeHtml(analysis.insufficient_evidence_reason || '') + '</p>';
+            }
+            document.getElementById('analysisContent').innerHTML = html;
+        }
+
+        function toggleDetails() {
+            var panel = document.getElementById('detailsPanel');
+            var icon = document.getElementById('toggleIcon');
+            var open = panel.style.display === 'block';
+            panel.style.display = open ? 'none' : 'block';
+            icon.className = open ? 'fas fa-chevron-right' : 'fas fa-chevron-down';
         }
 
         async function loadCases() {
@@ -108,10 +201,11 @@
                 var res = await fetch('GetActiveCasesServlet');
                 var rows = await res.json();
                 if (!Array.isArray(rows) || rows.length === 0) {
-                    select.innerHTML = '<option value="">No active cases found</option>';
+                    select.innerHTML = '<option value="">No active cases</option>';
+                    addMessage('ai', 'No active case found right now. Once you accept a case, I can assist drafting.');
                     return;
                 }
-                var options = ['<option value="">Select case</option>'];
+                var options = [];
                 rows.forEach(function (r) {
                     options.push(
                         '<option value="' + r.caseId + '">#' + r.caseId + ' - ' +
@@ -119,61 +213,37 @@
                     );
                 });
                 select.innerHTML = options.join('');
+                addMessage('ai', 'Hi! I can help with hearing prep, issue framing, and evidence checklists for your selected case.');
             } catch (e) {
                 select.innerHTML = '<option value="">Unable to load active cases</option>';
+                addMessage('ai', 'Could not load active cases. Please refresh this page.');
             }
         }
 
-        function getSelectedCaseId() {
-            var manual = document.getElementById('caseIdManual').value.trim();
-            if (manual) return manual;
-            return document.getElementById('caseSelect').value;
-        }
-
-        function renderList(items) {
-            if (!Array.isArray(items) || items.length === 0) return '<p class="muted">No items.</p>';
-            return '<ul class="list">' + items.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>';
-        }
-
-        function renderAnalysis(analysis) {
-            var level = (analysis.case_strength && analysis.case_strength.level) ? analysis.case_strength.level : 'low';
-            var strengthClass = 'strength-' + level;
-            var html = '';
-            html += '<p><strong>Summary:</strong> ' + escapeHtml(analysis.summary || '') + '</p>';
-            html += '<p><strong>Confidence:</strong> ' + escapeHtml(String(analysis.confidence || 0)) + '%</p>';
-            html += '<p><strong>Case Strength:</strong> <span class="' + strengthClass + '">' + escapeHtml(level.toUpperCase()) + '</span></p>';
-            html += '<p><strong>Strength Reasoning</strong></p>' + renderList((analysis.case_strength || {}).reasoning || []);
-            html += '<p><strong>Applicable Rules</strong></p>' + renderList(analysis.applicable_rules || []);
-            html += '<p><strong>Proof Required</strong></p>' + renderList(analysis.proof_required || []);
-            if (analysis.insufficient_evidence) {
-                html += '<p class="muted"><strong>Evidence Gap:</strong> ' + escapeHtml(analysis.insufficient_evidence_reason || '') + '</p>';
-            }
-            html += '<p class="muted"><strong>Disclaimer:</strong> ' + escapeHtml(analysis.disclaimer || '') + '</p>';
-            document.getElementById('analysisContent').innerHTML = html;
-        }
-
-        async function analyzeCase() {
+        async function sendMessage() {
             var caseId = getSelectedCaseId();
-            var prompt = document.getElementById('prompt').value.trim();
-            var analysisCard = document.getElementById('analysisCard');
-            var analysisContent = document.getElementById('analysisContent');
-            var btn = document.getElementById('analyzeBtn');
+            var promptEl = document.getElementById('prompt');
+            var prompt = promptEl.value.trim();
+            var btn = document.getElementById('sendBtn');
 
-            if (!caseId) {
-                analysisCard.style.display = 'block';
-                analysisContent.innerHTML = '<p class="muted">Please select or enter a case ID.</p>';
+            if (!prompt) return;
+
+            addMessage('user', prompt);
+            promptEl.value = '';
+
+            if (isGreeting(prompt)) {
+                addMessage('ai', 'Hello! Tell me what you need:\n- issue framing\n- evidence gap analysis\n- hearing checklist\n- procedural next steps');
                 return;
             }
-            if (!prompt) {
-                analysisCard.style.display = 'block';
-                analysisContent.innerHTML = '<p class="muted">Please enter a request.</p>';
+
+            if (!caseId) {
+                addMessage('ai', 'Please select an active case first.');
                 return;
             }
 
             btn.disabled = true;
-            btn.textContent = 'Analyzing...';
-            analysisCard.style.display = 'block';
-            analysisContent.innerHTML = '<p class="muted">Generating grounded analysis...</p>';
+            btn.textContent = 'Sending...';
+            setStatus('Thinking...', 'ok');
 
             try {
                 var body = new URLSearchParams({ role: 'lawyer', caseId: String(caseId), prompt: prompt });
@@ -187,22 +257,32 @@
                     throw new Error(data.message || 'Request failed');
                 }
 
-                renderAnalysis(data.analysis || {});
+                var analysis = data.analysis || {};
+                renderAnalysis(analysis);
+                addMessage('ai', buildFriendlyReply(analysis));
+
                 if (data.mode === 'live') {
-                    setStatus('Live Gemini mode with grounded case context.', 'ok');
+                    setStatus('Connected to live AI.', 'ok');
                 } else if (data.mode === 'grounded-insufficient') {
-                    setStatus('Limited evidence for case-specific judgment. Ask checklist/next-step questions or request more facts.', 'warning');
+                    setStatus('Need more case facts for stronger case-specific output.', 'warn');
                 } else {
-                    setStatus('Fallback grounded mode used (Gemini key missing/unavailable).', 'warning');
+                    setStatus('Using backup AI mode.', 'warn');
                 }
             } catch (err) {
-                setStatus('Request failed. Please verify case access and server config.', 'warning');
-                analysisContent.innerHTML = '<p class="muted">' + escapeHtml(err.message || String(err)) + '</p>';
+                setStatus('Message failed. Please try again.', 'warn');
+                addMessage('ai', 'Sorry, I could not process that request right now.');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Generate Analysis';
+                btn.textContent = 'Send';
             }
         }
+
+        document.getElementById('prompt').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
         loadCases();
     </script>
