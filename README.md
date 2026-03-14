@@ -42,13 +42,27 @@ LegalConnent/
 
 ### 1) Database connection
 
-Update database settings in `src/java/DBConnectionUtil.java`:
+Configure database credentials via environment variables (or JVM system properties):
 
-```java
-private static final String DB_URL = "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-private static final String DB_USER = "root";
-private static final String DB_PASSWORD = "root";
+```bash
+# Linux/macOS
+export LEGALCONNECT_DB_URL="jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+export LEGALCONNECT_DB_USER="your_db_user"
+export LEGALCONNECT_DB_PASSWORD="your_db_password"
 ```
+
+```powershell
+# Windows PowerShell (current session)
+$env:LEGALCONNECT_DB_URL="jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+$env:LEGALCONNECT_DB_USER="your_db_user"
+$env:LEGALCONNECT_DB_PASSWORD="your_db_password"
+```
+
+`DBConnectionUtil` now requires these keys:
+
+- `LEGALCONNECT_DB_URL`
+- `LEGALCONNECT_DB_USER`
+- `LEGALCONNECT_DB_PASSWORD`
 
 Create the database:
 
@@ -108,8 +122,8 @@ Full servlet mappings are defined in `web/WEB-INF/web.xml`.
 
 ## Security Notes
 
-- Do not commit real DB passwords or API keys.
-- Move credentials to environment variables or server secrets for production use.
+- Do not commit DB passwords or API keys.
+- Use environment variables or secret managers for all credentials.
 - Add password reset, email verification, and stronger auth controls before production rollout.
 
 ## License

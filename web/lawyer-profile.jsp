@@ -26,11 +26,7 @@
     ResultSet rs = null;
     
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-            "root", "root"
-        );
+        conn = DBConnectionUtil.getConnection();
         
         String sql = "SELECT u.first_name, u.last_name, u.email, u.phone_number, u.city, " +
                      "l.bar_number, l.state_licensed, l.years_experience, l.primary_specialization, " +

@@ -4,10 +4,6 @@ import java.sql.SQLException;
 
 public final class DBConnectionUtil {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root";
-
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -20,6 +16,22 @@ public final class DBConnectionUtil {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        String dbUrl = getConfigValue("LEGALCONNECT_DB_URL");
+        String dbUser = getConfigValue("LEGALCONNECT_DB_USER");
+        String dbPassword = getConfigValue("LEGALCONNECT_DB_PASSWORD");
+
+        if (dbUrl.isEmpty() || dbUser.isEmpty() || dbPassword.isEmpty()) {
+            throw new SQLException("Database configuration missing. Set LEGALCONNECT_DB_URL, LEGALCONNECT_DB_USER, and LEGALCONNECT_DB_PASSWORD.");
+        }
+
+        return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+    }
+
+    private static String getConfigValue(String key) {
+        String value = System.getenv(key);
+        if (value == null || value.trim().isEmpty()) {
+            value = System.getProperty(key);
+        }
+        return value == null ? "" : value.trim();
     }
 }
