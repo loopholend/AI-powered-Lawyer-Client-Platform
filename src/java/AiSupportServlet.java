@@ -100,6 +100,7 @@ public class AiSupportServlet extends HttpServlet {
             String legalKnowledge = buildLegalKnowledge(caseContext.caseType, userPrompt);
             String documentSnippet = loadDocumentSnippet(request, caseContext.documentPath);
             boolean enoughEvidence = hasEnoughEvidence(caseContext, documentSnippet);
+            boolean strictEvidenceGate = requiresStrictEvidenceGate(userPrompt);
 
             List<Map<String, Object>> recommendations = "client".equals(role)
                 ? buildLawyerRecommendations(conn, caseContext, userPrompt)
@@ -108,23 +109,51 @@ public class AiSupportServlet extends HttpServlet {
             Map<String, Object> analysis;
             String mode;
 
-            if (!enoughEvidence) {
+            if (!enoughEvidence && strictEvidenceGate) {
                 analysis = buildInsufficientEvidenceAnalysis(caseContext, legalKnowledge, recommendations);
                 mode = "grounded-insufficient";
             } else {
                 String geminiKey = AIConfig.getGeminiApiKey();
                 if (geminiKey.isEmpty()) {
-                    analysis = buildLocalGroundedAnalysis(caseContext, userPrompt, documentSnippet, legalKnowledge, recommendations);
+                    analysis = buildLocalGroundedAnalysis(
+                        caseContext,
+                        userPrompt,
+                        documentSnippet,
+                        legalKnowledge,
+                        recommendations,
+                        strictEvidenceGate
+                    );
                     mode = "fallback";
                 } else {
                     try {
-                        String modelPrompt = buildGeminiPrompt(role, userPrompt, caseContext, documentSnippet, legalKnowledge);
+                        String modelPrompt = buildGeminiPrompt(
+                            role,
+                            userPrompt,
+                            caseContext,
+                            documentSnippet,
+                            legalKnowledge,
+                            strictEvidenceGate,
+                            enoughEvidence
+                        );
                         String rawModelOutput = callGemini(modelPrompt, geminiKey);
                         Map<String, Object> parsed = parseJsonObject(extractFirstJsonObject(rawModelOutput));
-                        analysis = normalizeModelAnalysis(parsed, caseContext, legalKnowledge, recommendations);
+                        analysis = normalizeModelAnalysis(
+                            parsed,
+                            caseContext,
+                            legalKnowledge,
+                            recommendations,
+                            strictEvidenceGate
+                        );
                         mode = "live";
                     } catch (Exception ex) {
-                        analysis = buildLocalGroundedAnalysis(caseContext, userPrompt, documentSnippet, legalKnowledge, recommendations);
+                        analysis = buildLocalGroundedAnalysis(
+                            caseContext,
+                            userPrompt,
+                            documentSnippet,
+                            legalKnowledge,
+                            recommendations,
+                            strictEvidenceGate
+                        );
                         mode = "fallback";
                     }
                 }
@@ -272,6 +301,30 @@ public class AiSupportServlet extends HttpServlet {
         return score >= 3;
     }
 
+    private boolean requiresStrictEvidenceGate(String prompt) {
+        String p = safe(prompt).toLowerCase(Locale.ENGLISH);
+        if (p.isEmpty()) {
+            return false;
+        }
+        if (p.length() <= 20 && (containsAny(p, "hi", "hello", "hey", "thanks", "thank you"))) {
+            return false;
+        }
+        return containsAny(
+            p,
+            "case strength",
+            "strength analysis",
+            "winning chance",
+            "who will win",
+            "outcome prediction",
+            "liable",
+            "applicable rules",
+            "which law applies",
+            "legal sections",
+            "recommend lawyer",
+            "best lawyer"
+        );
+    }
+
     private List<Map<String, Object>> buildLawyerRecommendations(Connection conn, CaseContext ctx, String prompt)
             throws SQLException {
         String sql = "SELECT u.user_id, u.first_name, u.last_name, u.city, " +
@@ -375,12 +428,23 @@ public class AiSupportServlet extends HttpServlet {
         return joinWithComma(parts);
     }
 
-    private String buildGeminiPrompt(String role, String userPrompt, CaseContext ctx, String documentSnippet, String legalKnowledge) {
+    private String buildGeminiPrompt(
+            String role,
+            String userPrompt,
+            CaseContext ctx,
+            String documentSnippet,
+            String legalKnowledge,
+            boolean strictEvidenceGate,
+            boolean enoughEvidence) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("You are a legal assistant for a case platform.\n");
         prompt.append("Critical constraints:\n");
         prompt.append("1) Use only the provided case context, document snippet, and legal knowledge notes.\n");
-        prompt.append("2) If evidence is missing, set insufficient_evidence=true and summary exactly to \"I don't know from provided documents.\".\n");
+        if (strictEvidenceGate) {
+            prompt.append("2) If evidence is missing, set insufficient_evidence=true and summary exactly to \"I don't know from provided documents.\".\n");
+        } else {
+            prompt.append("2) If evidence is limited, you may still give procedural next steps and checklists without inventing facts.\n");
+        }
         prompt.append("3) Do not provide final legal advice; keep informational tone.\n");
         prompt.append("4) Return JSON only. No markdown, no prose.\n\n");
 
@@ -397,6 +461,8 @@ public class AiSupportServlet extends HttpServlet {
 
         prompt.append("Role: ").append(role).append("\n");
         prompt.append("User question: ").append(userPrompt).append("\n\n");
+        prompt.append("Strict evidence gate required: ").append(strictEvidenceGate).append("\n");
+        prompt.append("Evidence appears sufficient: ").append(enoughEvidence).append("\n\n");
 
         prompt.append("Case context:\n");
         prompt.append("- case_id: ").append(ctx.caseId).append("\n");
@@ -495,7 +561,8 @@ public class AiSupportServlet extends HttpServlet {
             Map<String, Object> modelJson,
             CaseContext ctx,
             String legalKnowledge,
-            List<Map<String, Object>> recommendations) {
+            List<Map<String, Object>> recommendations,
+            boolean strictEvidenceGate) {
         Map<String, Object> analysis = new LinkedHashMap<String, Object>();
 
         String summary = safe(asString(modelJson.get("summary")));
@@ -512,7 +579,7 @@ public class AiSupportServlet extends HttpServlet {
         }
         List<String> strengthReasons = asStringList(caseStrength.get("reasoning"));
 
-        if (insufficient || summary.isEmpty()) {
+        if ((strictEvidenceGate && insufficient) || summary.isEmpty()) {
             summary = "I don't know from provided documents.";
             if (insufficientReason.isEmpty()) {
                 insufficientReason = "Evidence in provided case details/documents is not enough for reliable analysis.";
@@ -522,6 +589,11 @@ public class AiSupportServlet extends HttpServlet {
             if (strengthReasons.isEmpty()) {
                 strengthReasons.add("Insufficient documentary support and factual detail for stronger assessment.");
             }
+        } else if (insufficient) {
+            if (insufficientReason.isEmpty()) {
+                insufficientReason = "Evidence is limited, so this response is guidance-oriented and not a final case judgment.";
+            }
+            confidence = Math.min(confidence, 50);
         }
 
         if (rules.isEmpty()) {
@@ -552,7 +624,8 @@ public class AiSupportServlet extends HttpServlet {
             String userPrompt,
             String documentSnippet,
             String legalKnowledge,
-            List<Map<String, Object>> recommendations) {
+            List<Map<String, Object>> recommendations,
+            boolean strictEvidenceGate) {
         Map<String, Object> analysis = new LinkedHashMap<String, Object>();
         Map<String, Object> strength = new LinkedHashMap<String, Object>();
 
@@ -590,10 +663,14 @@ public class AiSupportServlet extends HttpServlet {
         String insufficientReason = insufficient
             ? "Available case data is not detailed enough for high-confidence conclusions."
             : "";
-        if (insufficient) {
+        if (insufficient && strictEvidenceGate) {
             summary = "I don't know from provided documents.";
             confidence = Math.min(confidence, 35);
             level = "low";
+        } else if (insufficient) {
+            summary = "I can help with procedural guidance, but not final case-specific conclusions yet from the current details.";
+            confidence = Math.min(confidence, 45);
+            insufficientReason = "Share clearer facts/timeline in the prompt or attach readable case documents to improve case-specific output.";
         }
 
         strength.put("level", level);
@@ -629,7 +706,7 @@ public class AiSupportServlet extends HttpServlet {
         analysis.put("proof_required", defaultProofList(ctx.caseType));
         analysis.put("confidence", 20);
         analysis.put("insufficient_evidence", true);
-        analysis.put("insufficient_evidence_reason", "Provide clearer facts, timeline, and readable documentary evidence.");
+        analysis.put("insufficient_evidence_reason", "For case-specific judgment, share clearer facts/timeline in your prompt. Documents are optional but improve confidence.");
         analysis.put("lawyer_recommendations", recommendations);
         analysis.put("disclaimer", DISCLAIMER);
         return analysis;

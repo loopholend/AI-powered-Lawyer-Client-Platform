@@ -48,7 +48,7 @@
 <body>
     <div class="content-header">
         <h1><i class="fas fa-robot"></i> AI Case Assistant</h1>
-        <p>Grounded legal drafting support using selected case details and available records only.</p>
+        <p>Grounded legal drafting support using selected case details. Documents improve accuracy but are optional.</p>
     </div>
 
     <div class="card">
@@ -71,6 +71,7 @@
             <button id="analyzeBtn" class="btn" onclick="analyzeCase()">Generate Analysis</button>
             <button class="btn btn-alt" onclick="insertTemplate()">Insert Template</button>
         </div>
+        <p class="muted" style="margin-top:0.6rem;">If document text is missing, AI still provides procedural guidance from available case details.</p>
     </div>
 
     <div class="card" id="analysisCard" style="display:none;">
@@ -190,7 +191,7 @@
                 if (data.mode === 'live') {
                     setStatus('Live Gemini mode with grounded case context.', 'ok');
                 } else if (data.mode === 'grounded-insufficient') {
-                    setStatus('Insufficient evidence gate triggered. Answer restricted.', 'warning');
+                    setStatus('Limited evidence for case-specific judgment. Ask checklist/next-step questions or request more facts.', 'warning');
                 } else {
                     setStatus('Fallback grounded mode used (Gemini key missing/unavailable).', 'warning');
                 }

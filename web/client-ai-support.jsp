@@ -50,7 +50,7 @@
 <body>
     <div class="content-header">
         <h1><i class="fas fa-robot"></i> AI Case Assistant</h1>
-        <p>Grounded analysis from your selected case details and uploaded documents only.</p>
+        <p>Grounded analysis from selected case details. Documents improve accuracy but are optional.</p>
     </div>
 
     <div class="card">
@@ -73,6 +73,7 @@
             <button id="analyzeBtn" class="btn" onclick="analyzeCase()">Analyze Case</button>
             <button class="btn" style="background:#0B1F3A;" onclick="fillPrompt()">Use Template Prompt</button>
         </div>
+        <p class="muted" style="margin-top:0.6rem;">Need to attach a document? Use <strong>Upload Case</strong> from the sidebar (optional).</p>
     </div>
 
     <div class="card" id="analysisCard" style="display:none;">
@@ -211,7 +212,7 @@
                 if (data.mode === 'live') {
                     setStatus('Live Gemini mode with grounded case context.', 'ok');
                 } else if (data.mode === 'grounded-insufficient') {
-                    setStatus('Insufficient evidence gate triggered. Answer restricted.', 'warning');
+                    setStatus('Limited evidence for case-specific judgment. Ask checklist/next-step questions or add more facts.', 'warning');
                 } else {
                     setStatus('Fallback grounded mode used (Gemini key missing/unavailable).', 'warning');
                 }
