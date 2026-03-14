@@ -140,6 +140,7 @@ public class AiSupportServlet extends HttpServlet {
                         analysis = normalizeModelAnalysis(
                             parsed,
                             caseContext,
+                            userPrompt,
                             legalKnowledge,
                             recommendations,
                             strictEvidenceGate
@@ -560,6 +561,7 @@ public class AiSupportServlet extends HttpServlet {
     private Map<String, Object> normalizeModelAnalysis(
             Map<String, Object> modelJson,
             CaseContext ctx,
+            String userPrompt,
             String legalKnowledge,
             List<Map<String, Object>> recommendations,
             boolean strictEvidenceGate) {
@@ -600,7 +602,7 @@ public class AiSupportServlet extends HttpServlet {
             rules = splitKnowledgeLines(legalKnowledge);
         }
         if (proof.isEmpty()) {
-            proof = defaultProofList(ctx.caseType);
+            proof = defaultProofList(ctx.caseType, userPrompt);
         }
 
         Map<String, Object> strength = new LinkedHashMap<String, Object>();
@@ -656,8 +658,7 @@ public class AiSupportServlet extends HttpServlet {
             strengthReasoning.add("Limited document text extraction reduces certainty.");
         }
 
-        String summary = "Based on provided case details, this analysis focuses on stated facts and attached records only. " +
-                "Question addressed: " + truncate(userPrompt, 180);
+        String summary = buildPromptAlignedSummary(ctx.caseType, userPrompt);
         int confidence = clampInt(30 + (evidencePoints * 12), 20, 85);
         boolean insufficient = evidencePoints < 3;
         String insufficientReason = insufficient
@@ -679,7 +680,7 @@ public class AiSupportServlet extends HttpServlet {
         analysis.put("summary", summary);
         analysis.put("applicable_rules", splitKnowledgeLines(legalKnowledge));
         analysis.put("case_strength", strength);
-        analysis.put("proof_required", defaultProofList(ctx.caseType));
+        analysis.put("proof_required", defaultProofList(ctx.caseType, userPrompt));
         analysis.put("confidence", confidence);
         analysis.put("insufficient_evidence", insufficient);
         analysis.put("insufficient_evidence_reason", insufficientReason);
@@ -703,7 +704,7 @@ public class AiSupportServlet extends HttpServlet {
         analysis.put("summary", "I don't know from provided documents.");
         analysis.put("applicable_rules", splitKnowledgeLines(legalKnowledge));
         analysis.put("case_strength", strength);
-        analysis.put("proof_required", defaultProofList(ctx.caseType));
+        analysis.put("proof_required", defaultProofList(ctx.caseType, ""));
         analysis.put("confidence", 20);
         analysis.put("insufficient_evidence", true);
         analysis.put("insufficient_evidence_reason", "For case-specific judgment, share clearer facts/timeline in your prompt. Documents are optional but improve confidence.");
@@ -712,15 +713,20 @@ public class AiSupportServlet extends HttpServlet {
         return analysis;
     }
 
-    private List<String> defaultProofList(String caseType) {
-        String lower = safe(caseType).toLowerCase(Locale.ENGLISH);
+    private List<String> defaultProofList(String caseType, String userPrompt) {
+        String lower = (safe(caseType) + " " + safe(userPrompt)).toLowerCase(Locale.ENGLISH);
         List<String> proof = new ArrayList<String>();
         proof.add("Chronological event timeline with specific dates.");
         proof.add("Identity and address proofs of concerned parties.");
         proof.add("All notices, emails, chats, and call records relevant to the dispute.");
         proof.add("Any signed agreements, acknowledgments, or receipts.");
 
-        if (containsAny(lower, "property", "land", "title", "tenant")) {
+        if (containsAny(lower, "rental", "rent", "lease", "tenant", "landlord")) {
+            proof.add("Signed rent/lease agreement and all addendums.");
+            proof.add("Rent receipts, bank transfer records, and deposit payment proof.");
+            proof.add("Property handover/inventory condition record and photos.");
+            proof.add("Notice emails/messages about rent default, eviction, or termination.");
+        } else if (containsAny(lower, "property", "land", "title")) {
             proof.add("Ownership/title records, registry extracts, mutation/encumbrance records.");
             proof.add("Possession evidence such as tax bills, utility records, or possession memo.");
         } else if (containsAny(lower, "criminal", "bail", "fir", "arrest")) {
@@ -734,6 +740,34 @@ public class AiSupportServlet extends HttpServlet {
             proof.add("Performance, delivery, payment, and breach notice evidence.");
         }
         return proof;
+    }
+
+    private String buildPromptAlignedSummary(String caseType, String userPrompt) {
+        String prompt = safe(userPrompt);
+        String lower = prompt.toLowerCase(Locale.ENGLISH);
+        String caseTypeLower = safe(caseType).toLowerCase(Locale.ENGLISH);
+
+        if (containsAny(lower, "document", "documents", "proof", "evidence", "required")) {
+            if (containsAny(lower, "rental", "rent", "lease", "tenant", "landlord")) {
+                return "You asked about rental agreement documents. Here is a practical checklist you can prepare first.";
+            }
+            return "You asked what documents are needed. Here is a practical checklist based on your question and case context.";
+        }
+        if (containsAny(lower, "next step", "next steps", "what should i do", "what to do")) {
+            return "Here are clear next steps you can follow right now for this case.";
+        }
+        if (containsAny(lower, "lawyer", "recommend")) {
+            return "Here are suitable lawyer suggestions and why they match your request.";
+        }
+        if (containsAny(lower, "summary", "summarize")) {
+            return "Here is a simple summary of your case details.";
+        }
+
+        String summary = "Here is a grounded response based on your selected case details.";
+        if (containsAny(lower, "rental", "rent", "lease") && !containsAny(caseTypeLower, "rental", "rent", "lease", "tenant", "landlord")) {
+            summary += " Note: your selected case type appears different from rental; select the matching case for better accuracy.";
+        }
+        return summary;
     }
 
     private String extractFirstJsonObject(String text) {
