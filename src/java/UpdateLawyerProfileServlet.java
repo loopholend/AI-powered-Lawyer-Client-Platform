@@ -40,11 +40,7 @@ public class UpdateLawyerProfileServlet extends HttpServlet {
         PreparedStatement pstmtLawyer = null;
         
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root"
-            );
+            conn = DBConnectionUtil.getConnection();
             
             conn.setAutoCommit(false);
             

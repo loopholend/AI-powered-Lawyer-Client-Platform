@@ -57,76 +57,72 @@
         <servlet-class>GetLawyerStatsServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GeminiAIServlet</servlet-name>
-        <servlet-class>GeminiAIServlet</servlet-class>
+        <servlet-name>AiSupportServlet</servlet-name>
+        <servlet-class>AiSupportServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetClientStatsServlet</servlet-name>
-        <servlet-class>GetClientStatsServlet</servlet-class>
+        <servlet-name>GetNotificationsServlet</servlet-name>
+        <servlet-class>GetNotificationsServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CancelCaseServlet</servlet-name>
-        <servlet-class>CancelCaseServlet</servlet-class>
+        <servlet-name>MarkNotificationsReadServlet</servlet-name>
+        <servlet-class>MarkNotificationsReadServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CompleteCaseServlet</servlet-name>
-        <servlet-class>CompleteCaseServlet</servlet-class>
+        <servlet-name>GetCaseChatListServlet</servlet-name>
+        <servlet-class>GetCaseChatListServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetClientCasesServlet</servlet-name>
-        <servlet-class>GetClientCasesServlet</servlet-class>
+        <servlet-name>GetCaseMessagesServlet</servlet-name>
+        <servlet-class>GetCaseMessagesServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RateLawyerServlet</servlet-name>
-        <servlet-class>RateLawyerServlet</servlet-class>
+        <servlet-name>SendCaseMessageServlet</servlet-name>
+        <servlet-class>SendCaseMessageServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LawyerRequestCaseServlet</servlet-name>
-        <servlet-class>LawyerRequestCaseServlet</servlet-class>
+        <servlet-name>GetCaseTimelineServlet</servlet-name>
+        <servlet-class>GetCaseTimelineServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetCaseRequestsServlet</servlet-name>
-        <servlet-class>GetCaseRequestsServlet</servlet-class>
+        <servlet-name>UpdateCaseStatusServlet</servlet-name>
+        <servlet-class>UpdateCaseStatusServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AcceptLawyerRequestServlet</servlet-name>
-        <servlet-class>AcceptLawyerRequestServlet</servlet-class>
+        <servlet-name>GetAdminLawyersServlet</servlet-name>
+        <servlet-class>GetAdminLawyersServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetAllCaseRequestsServlet</servlet-name>
-        <servlet-class>GetAllCaseRequestsServlet</servlet-class>
+        <servlet-name>AdminLawyerActionServlet</servlet-name>
+        <servlet-class>AdminLawyerActionServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RejectLawyerRequestServlet</servlet-name>
-        <servlet-class>RejectLawyerRequestServlet</servlet-class>
+        <servlet-name>GetAdminLogsServlet</servlet-name>
+        <servlet-class>GetAdminLogsServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetPendingLawyersServlet</servlet-name>
-        <servlet-class>GetPendingLawyersServlet</servlet-class>
+        <servlet-name>GetAdminComplaintsServlet</servlet-name>
+        <servlet-class>GetAdminComplaintsServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>VerifyLawyerServlet</servlet-name>
-        <servlet-class>VerifyLawyerServlet</servlet-class>
+        <servlet-name>UpdateComplaintStatusServlet</servlet-name>
+        <servlet-class>UpdateComplaintStatusServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetAllUsersServlet</servlet-name>
-        <servlet-class>GetAllUsersServlet</servlet-class>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <servlet-class>SubmitReviewServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteUserServlet</servlet-name>
-        <servlet-class>DeleteUserServlet</servlet-class>
+        <servlet-name>SubmitComplaintServlet</servlet-name>
+        <servlet-class>SubmitComplaintServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetAllCasesServlet</servlet-name>
-        <servlet-class>GetAllCasesServlet</servlet-class>
+        <servlet-name>GetClientCaseTrackerServlet</servlet-name>
+        <servlet-class>GetClientCaseTrackerServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteCaseServlet</servlet-name>
-        <servlet-class>DeleteCaseServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetUserCasesServlet</servlet-name>
-        <servlet-class>GetUserCasesServlet</servlet-class>
+        <servlet-name>GetAdminStatsServlet</servlet-name>
+        <servlet-class>GetAdminStatsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ClientRegisterServlet</servlet-name>
@@ -185,76 +181,72 @@
         <url-pattern>/GetLawyerStatsServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GeminiAIServlet</servlet-name>
-        <url-pattern>/GeminiAIServlet</url-pattern>
+        <servlet-name>AiSupportServlet</servlet-name>
+        <url-pattern>/AiSupportServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetClientStatsServlet</servlet-name>
-        <url-pattern>/GetClientStatsServlet</url-pattern>
+        <servlet-name>GetNotificationsServlet</servlet-name>
+        <url-pattern>/GetNotificationsServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CancelCaseServlet</servlet-name>
-        <url-pattern>/CancelCaseServlet</url-pattern>
+        <servlet-name>MarkNotificationsReadServlet</servlet-name>
+        <url-pattern>/MarkNotificationsReadServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CompleteCaseServlet</servlet-name>
-        <url-pattern>/CompleteCaseServlet</url-pattern>
+        <servlet-name>GetCaseChatListServlet</servlet-name>
+        <url-pattern>/GetCaseChatListServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetClientCasesServlet</servlet-name>
-        <url-pattern>/GetClientCasesServlet</url-pattern>
+        <servlet-name>GetCaseMessagesServlet</servlet-name>
+        <url-pattern>/GetCaseMessagesServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RateLawyerServlet</servlet-name>
-        <url-pattern>/RateLawyerServlet</url-pattern>
+        <servlet-name>SendCaseMessageServlet</servlet-name>
+        <url-pattern>/SendCaseMessageServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>LawyerRequestCaseServlet</servlet-name>
-        <url-pattern>/LawyerRequestCaseServlet</url-pattern>
+        <servlet-name>GetCaseTimelineServlet</servlet-name>
+        <url-pattern>/GetCaseTimelineServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetCaseRequestsServlet</servlet-name>
-        <url-pattern>/GetCaseRequestsServlet</url-pattern>
+        <servlet-name>UpdateCaseStatusServlet</servlet-name>
+        <url-pattern>/UpdateCaseStatusServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AcceptLawyerRequestServlet</servlet-name>
-        <url-pattern>/AcceptLawyerRequestServlet</url-pattern>
+        <servlet-name>GetAdminLawyersServlet</servlet-name>
+        <url-pattern>/GetAdminLawyersServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetAllCaseRequestsServlet</servlet-name>
-        <url-pattern>/GetAllCaseRequestsServlet</url-pattern>
+        <servlet-name>AdminLawyerActionServlet</servlet-name>
+        <url-pattern>/AdminLawyerActionServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RejectLawyerRequestServlet</servlet-name>
-        <url-pattern>/RejectLawyerRequestServlet</url-pattern>
+        <servlet-name>GetAdminLogsServlet</servlet-name>
+        <url-pattern>/GetAdminLogsServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetPendingLawyersServlet</servlet-name>
-        <url-pattern>/GetPendingLawyersServlet</url-pattern>
+        <servlet-name>GetAdminComplaintsServlet</servlet-name>
+        <url-pattern>/GetAdminComplaintsServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>VerifyLawyerServlet</servlet-name>
-        <url-pattern>/VerifyLawyerServlet</url-pattern>
+        <servlet-name>UpdateComplaintStatusServlet</servlet-name>
+        <url-pattern>/UpdateComplaintStatusServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetAllUsersServlet</servlet-name>
-        <url-pattern>/GetAllUsersServlet</url-pattern>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <url-pattern>/SubmitReviewServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteUserServlet</servlet-name>
-        <url-pattern>/DeleteUserServlet</url-pattern>
+        <servlet-name>SubmitComplaintServlet</servlet-name>
+        <url-pattern>/SubmitComplaintServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetAllCasesServlet</servlet-name>
-        <url-pattern>/GetAllCasesServlet</url-pattern>
+        <servlet-name>GetClientCaseTrackerServlet</servlet-name>
+        <url-pattern>/GetClientCaseTrackerServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteCaseServlet</servlet-name>
-        <url-pattern>/DeleteCaseServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetUserCasesServlet</servlet-name>
-        <url-pattern>/GetUserCasesServlet</url-pattern>
+        <servlet-name>GetAdminStatsServlet</servlet-name>
+        <url-pattern>/GetAdminStatsServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

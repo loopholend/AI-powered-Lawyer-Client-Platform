@@ -7,15 +7,16 @@
         return;
     }
     
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    
+    // Fetch current user data
     String firstName = "";
     String lastName = "";
     String email = "";
     String phone = "";
-    String address = "";
+    String city = "";
+    
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
     
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -24,20 +25,17 @@
             "root", "root"
         );
         
-        String sql = "SELECT u.first_name, u.last_name, u.email, c.phone, c.address " +
-                     "FROM users u " +
-                     "LEFT JOIN clients c ON u.user_id = c.user_id " +
-                     "WHERE u.user_id = ?";
+        String sql = "SELECT first_name, last_name, email, phone_number, city FROM users WHERE user_id = ?";
         pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, userId);
         rs = pstmt.executeQuery();
         
         if (rs.next()) {
-            firstName = rs.getString("first_name") != null ? rs.getString("first_name") : "";
-            lastName = rs.getString("last_name") != null ? rs.getString("last_name") : "";
-            email = rs.getString("email") != null ? rs.getString("email") : "";
-            phone = rs.getString("phone") != null ? rs.getString("phone") : "";
-            address = rs.getString("address") != null ? rs.getString("address") : "";
+            firstName = rs.getString("first_name");
+            lastName = rs.getString("last_name");
+            email = rs.getString("email");
+            phone = rs.getString("phone_number");
+            city = rs.getString("city");
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -46,20 +44,6 @@
         if (pstmt != null) pstmt.close();
         if (conn != null) conn.close();
     }
-    
-    // Get from session if empty
-    if (firstName.isEmpty()) {
-        firstName = (String) session.getAttribute("firstName");
-        if (firstName == null) firstName = "";
-    }
-    if (lastName.isEmpty()) {
-        lastName = (String) session.getAttribute("lastName");
-        if (lastName == null) lastName = "";
-    }
-    if (email.isEmpty()) {
-        email = (String) session.getAttribute("email");
-        if (email == null) email = "";
-    }
 %>
 <!DOCTYPE html>
 <html>
@@ -67,348 +51,241 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dark-mode.css">
-    <script src="dark-mode.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #f9fafb;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .page-header {
+        body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; }
+        .content-header {
             background: white;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             border-radius: 12px;
             margin-bottom: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        
-        .page-header h1 {
-            color: #1f2937;
-            font-size: 2rem;
-            margin: 0 0 0.5rem 0;
-        }
-        
-        .page-header p {
-            color: #6b7280;
-            margin: 0;
-        }
+        .content-header h1 { color: #111827; font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .content-header p { color: #6b7280; }
         
         .profile-container {
             max-width: 800px;
             margin: 0 auto;
         }
         
-        .profile-card {
+        .card {
             background: white;
-            border-radius: 12px;
             padding: 2rem;
+            border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #f9fafb;
-        }
-        
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-        
-        .profile-info {
-            flex: 1;
-        }
-        
-        .profile-name {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        
-        .profile-email {
-            color: #6b7280;
-            font-size: 1rem;
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-        }
-        
-        .form-section h2 {
-            color: #1f2937;
-            font-size: 1.3rem;
             margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
-        
-        .form-section h2 i {
-            color: #667eea;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+        .card h3 {
+            color: #111827;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #F8FAFC;
         }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
         .form-group label {
             display: block;
-            color: #1f2937;
-            font-weight: 600;
+            color: #111827;
+            font-weight: 500;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
         }
-        
+        .required { color: #ef4444; }
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #E5E7EB;
             border-radius: 8px;
             font-size: 0.95rem;
             font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-            transition: all 0.3s;
-            color: #1f2937;
+            transition: border-color 0.3s;
         }
-        
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #C9A227;
         }
-        
         .form-control:disabled {
-            background: #f3f4f6;
-            color: #374151;
+            background: #F8FAFC;
             cursor: not-allowed;
-            border-color: #d1d5db;
-            -webkit-text-fill-color: #374151;
-            opacity: 1;
         }
         
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
         
-        .btn-update {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+        .btn-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .btn-update, .btn-cancel {
+            flex: 1;
+            padding: 0.875rem;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
+            border: none;
+            font-size: 1rem;
             transition: all 0.3s;
+        }
+        .btn-update {
+            background: #C9A227;
+            color: white;
+        }
+        .btn-update:hover {
+            background: #A9861F;
+            transform: translateY(-2px);
+        }
+        .btn-cancel {
+            background: #F8FAFC;
+            color: #111827;
+        }
+        .btn-cancel:hover {
+            background: #E5E7EB;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .alert i {
+            margin-right: 0.5rem;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0B1F3A 0%, #0B1F3A 100%);
+            color: white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
         }
         
-        .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .success-message {
-            background: #d1fae5;
-            color: #065f46;
+        .info-text {
+            background: #eff6ff;
+            border-left: 4px solid #C9A227;
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 4px;
+            color: #A9861F;
+            font-size: 0.9rem;
             margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
         }
         
-        .error-message {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .password-card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .password-card h2 {
-            color: #1f2937;
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .password-card h2 i {
-            color: #ef4444;
-        }
-        
-        @media (max-width: 768px) {
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="page-header">
-        <h1><i class="fas fa-user-edit"></i> Update Profile</h1>
-        <p>Manage your personal information and account settings</p>
-    </div>
-
     <div class="profile-container">
-        <% if (request.getParameter("updated") != null && request.getParameter("updated").equals("true")) { %>
-            <div class="success-message">
-                <i class="fas fa-check-circle"></i>
-                <span>Profile updated successfully!</span>
-            </div>
-        <% } %>
-        
-        <% if (request.getParameter("error") != null && request.getParameter("error").equals("true")) { %>
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>Failed to update profile. Please try again.</span>
-            </div>
-        <% } %>
-
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <%= !firstName.isEmpty() && !lastName.isEmpty() ? firstName.charAt(0) + "" + lastName.charAt(0) : "PP" %>
-                </div>
-                <div class="profile-info">
-                    <div class="profile-name"><%= !firstName.isEmpty() ? firstName : "User" %> <%= lastName %></div>
-                    <div class="profile-email"><%= email %></div>
-                </div>
-            </div>
-
-            <form action="UpdateClientProfileServlet" method="POST">
-                <div class="form-section">
-                    <h2><i class="fas fa-user"></i> Personal Information</h2>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" name="firstName" class="form-control" 
-                                   value="<%= firstName %>" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" name="lastName" class="form-control" 
-                                   value="<%= lastName %>" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" class="form-control" 
-                               value="<%= email %>" disabled>
-                        <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
-                            Email cannot be changed
-                        </small>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2><i class="fas fa-address-book"></i> Contact Information</h2>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" 
-                               value="<%= phone %>" placeholder="Enter your phone number">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" name="address" class="form-control" 
-                                  placeholder="Enter your complete address"><%= address %></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-update">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </form>
+        <div class="content-header">
+            <h1>Update Profile</h1>
+            <p>Manage your account information</p>
         </div>
 
-        <div class="password-card">
-            <h2><i class="fas fa-lock"></i> Change Password</h2>
-            
-            <% if (request.getParameter("passwordUpdated") != null && request.getParameter("passwordUpdated").equals("true")) { %>
-                <div class="success-message">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Password changed successfully!</span>
-                </div>
-            <% } %>
-            
-            <% if (request.getParameter("passwordError") != null) { %>
-                <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span><%= request.getParameter("passwordError") %></span>
-                </div>
-            <% } %>
+        <div id="alertBox" class="alert"></div>
 
-            <form action="ChangePasswordServlet" method="POST">
-                <div class="form-group">
-                    <label for="currentPassword">Current Password</label>
-                    <input type="password" id="currentPassword" name="currentPassword" 
-                           class="form-control" required placeholder="Enter current password">
+        <div class="card">
+            <div class="profile-avatar">
+                <%= firstName.charAt(0) %><%= lastName.charAt(0) %>
+            </div>
+            
+            <h3>Personal Information</h3>
+            
+            <form id="profileForm" action="UpdateProfileServlet" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" 
+                               value="<%= firstName %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name <span class="required">*</span></label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" 
+                               value="<%= lastName %>" required>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" 
-                           class="form-control" required placeholder="Enter new password" minlength="6">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" 
+                           value="<%= email %>" disabled>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Email cannot be changed</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" 
-                           class="form-control" required placeholder="Confirm new password" minlength="6">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" class="form-control" 
+                           value="<%= phone %>" required>
                 </div>
-
-                <button type="submit" class="btn-update" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                
+                <div class="form-group">
+                    <label for="city">City <span class="required">*</span></label>
+                    <input type="text" id="city" name="city" class="form-control" 
+                           value="<%= city %>" required>
+                </div>
+                
+                <div class="btn-section">
+                    <button type="button" class="btn-cancel" onclick="resetForm()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button type="submit" class="btn-update">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3>Change Password</h3>
+            
+            <div class="info-text">
+                <i class="fas fa-info-circle"></i>
+                To change your password, please contact support or use the "Forgot Password" option on the login page.
+            </div>
+            
+            <form id="passwordForm" action="ChangePasswordServlet" method="POST">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password <span class="required">*</span></label>
+                    <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newPassword">New Password <span class="required">*</span></label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" 
+                           minlength="8" required>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Minimum 8 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn-update" style="width: 100%;">
                     <i class="fas fa-key"></i> Change Password
                 </button>
             </form>
@@ -416,21 +293,51 @@
     </div>
 
     <script>
-        // Password match validation
-        document.querySelector('form[action="ChangePasswordServlet"]').addEventListener('submit', function(e) {
+        window.onload = function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('success') === 'profile') {
+                showAlert('Profile updated successfully!', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('success') === 'password') {
+                showAlert('Password changed successfully!', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('error') === 'wrongpassword') {
+                showAlert('Current password is incorrect', 'error');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('error') === 'failed') {
+                showAlert('Update failed. Please try again.', 'error');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        };
+
+        function showAlert(message, type) {
+            var alertBox = document.getElementById('alertBox');
+            alertBox.className = 'alert alert-' + type;
+            alertBox.style.display = 'block';
+            
+            if (type === 'success') {
+                alertBox.innerHTML = '<i class="fas fa-check-circle"></i>' + message;
+            } else {
+                alertBox.innerHTML = '<i class="fas fa-exclamation-circle"></i>' + message;
+            }
+            
+            setTimeout(function() {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        function resetForm() {
+            document.getElementById('profileForm').reset();
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
             var newPassword = document.getElementById('newPassword').value;
             var confirmPassword = document.getElementById('confirmPassword').value;
             
             if (newPassword !== confirmPassword) {
                 e.preventDefault();
-                alert('New passwords do not match!');
-                return false;
-            }
-            
-            if (newPassword.length < 6) {
-                e.preventDefault();
-                alert('Password must be at least 6 characters long!');
-                return false;
+                showAlert('New passwords do not match', 'error');
             }
         });
     </script>

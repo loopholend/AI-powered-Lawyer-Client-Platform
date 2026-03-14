@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { margin: 0; padding: 20px; background: #f9fafb; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; }
         .content-header {
             background: white;
             padding: 1.5rem 2rem;
@@ -15,7 +15,7 @@
             margin-bottom: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .content-header h1 { color: #1f2937; font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .content-header h1 { color: #111827; font-size: 1.75rem; margin-bottom: 0.5rem; }
         .content-header p { color: #6b7280; }
         .stats-grid {
             display: grid;
@@ -44,12 +44,12 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #0B1F3A 0%, #C9A227 100%);
         }
         .stat-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #0B1F3A 0%, #C9A227 100%);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -61,7 +61,7 @@
         .stat-value { 
             font-size: 2rem; 
             font-weight: 700; 
-            color: #1f2937; 
+            color: #111827; 
             margin-bottom: 0.5rem;
             min-height: 48px;
             display: flex;
@@ -74,7 +74,7 @@
             width: 30px;
             height: 30px;
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #f5576c;
+            border-top: 3px solid #C9A227;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -89,7 +89,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             margin-bottom: 1.5rem;
         }
-        .card h3 { color: #1f2937; margin-bottom: 1rem; }
+        .card h3 { color: #111827; margin-bottom: 1rem; }
         .card p { color: #6b7280; line-height: 1.6; }
         .quick-actions {
             display: grid;
@@ -99,20 +99,20 @@
         }
         .action-btn {
             padding: 1rem;
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
+            background: #F8FAFC;
+            border: 2px solid #E5E7EB;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            color: #1f2937;
+            color: #111827;
             font-weight: 600;
         }
         .action-btn:hover {
-            background: #f5576c;
+            background: #C9A227;
             color: white;
-            border-color: #f5576c;
+            border-color: #C9A227;
             transform: translateY(-2px);
         }
         .action-btn i {
@@ -170,7 +170,7 @@
                 <i class="fas fa-briefcase"></i>
                 Manage Active Cases
             </a>
-            <a href="#" onclick="parent.document.querySelectorAll('.nav-item')[3].click(); return false;" class="action-btn">
+            <a href="#" onclick="parent.document.querySelectorAll('.nav-item')[5].click(); return false;" class="action-btn">
                 <i class="fas fa-user-edit"></i>
                 Update Profile
             </a>

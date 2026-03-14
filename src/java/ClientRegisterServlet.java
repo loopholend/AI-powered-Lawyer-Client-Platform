@@ -3,7 +3,6 @@ import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,11 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class ClientRegisterServlet extends HttpServlet {
-
-    // Using NEW MySQL 8.x Driver with SSL disabled
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root";
     
     private String hashPassword(String password) {
         try {
@@ -63,9 +57,7 @@ public class ClientRegisterServlet extends HttpServlet {
         ResultSet rs = null;
         
         try {
-            // NEW MySQL 8.x Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            conn = DBConnectionUtil.getConnection();
             conn.setAutoCommit(false);
             
             String checkSql = "SELECT user_id FROM users WHERE email = ?";
@@ -108,12 +100,12 @@ public class ClientRegisterServlet extends HttpServlet {
                         out.println("<!DOCTYPE html><html><head><title>Success</title>");
                         out.println("<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap' rel='stylesheet'>");
                         out.println("<style>");
-                        out.println("body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;height:100vh;margin:0}");
+                        out.println("body{font-family:'Inter',sans-serif;background:#F8FAFC;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}");
                         out.println(".box{background:white;padding:3rem;border-radius:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:500px}");
                         out.println(".icon{font-size:4rem;color:#10b981;margin-bottom:1rem}");
-                        out.println("h2{color:#1f2937;margin-bottom:1rem}");
+                        out.println("h2{color:#111827;margin-bottom:1rem}");
                         out.println("p{color:#6b7280;margin-bottom:2rem}");
-                        out.println(".btn{display:inline-block;background:#2563eb;color:white;padding:1rem 2rem;text-decoration:none;border-radius:8px;font-weight:600}");
+                        out.println(".btn{display:inline-block;background:#C9A227;color:white;padding:1rem 2rem;text-decoration:none;border-radius:8px;font-weight:600}");
                         out.println("</style></head><body>");
                         out.println("<div class='box'><div class='icon'>✓</div>");
                         out.println("<h2>Registration Successful!</h2>");
@@ -126,10 +118,6 @@ public class ClientRegisterServlet extends HttpServlet {
                 }
             }
             
-        } catch (ClassNotFoundException e) {
-            System.err.println("Driver error: " + e.getMessage());
-            e.printStackTrace();
-            response.sendRedirect("client-register.html?error=driver");
         } catch (SQLException e) {
             if (conn != null) {
                 try { conn.rollback(); } catch (SQLException ex) { }

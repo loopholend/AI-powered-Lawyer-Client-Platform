@@ -28,22 +28,19 @@ public class GetActiveCasesServlet extends HttpServlet {
         ResultSet rs = null;
         
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root"
-            );
+            conn = DBConnectionUtil.getConnection();
+            FeatureSchemaUtil.ensureInitialized(conn);
             
             // Get active cases assigned to this lawyer
             String sql = 
-                "SELECT c.case_id, c.case_title, c.case_type, c.case_description, " +
+                "SELECT c.case_id, c.case_title, c.case_type, c.case_status, c.case_description, " +
                 "c.city, c.urgency, c.budget, c.document_path, c.created_at, " +
                 "u.first_name, u.last_name, u.email, u.phone_number " +
                 "FROM cases c " +
                 "INNER JOIN lawyers l ON c.lawyer_id = l.lawyer_id " +
                 "INNER JOIN clients cl ON c.client_id = cl.client_id " +
                 "INNER JOIN users u ON cl.user_id = u.user_id " +
-                "WHERE l.user_id = ? AND c.case_status = 'active' " +
+                "WHERE l.user_id = ? AND c.case_status <> 'pending' " +
                 "ORDER BY c.created_at DESC";
             
             pstmt = conn.prepareStatement(sql);
@@ -60,6 +57,7 @@ public class GetActiveCasesServlet extends HttpServlet {
                 out.print("\"caseId\":" + rs.getInt("case_id") + ",");
                 out.print("\"title\":\"" + clean(rs.getString("case_title")) + "\",");
                 out.print("\"type\":\"" + clean(rs.getString("case_type")) + "\",");
+                out.print("\"status\":\"" + clean(rs.getString("case_status")) + "\",");
                 out.print("\"description\":\"" + clean(rs.getString("case_description")) + "\",");
                 out.print("\"city\":\"" + clean(rs.getString("city")) + "\",");
                 out.print("\"urgency\":\"" + clean(rs.getString("urgency")) + "\",");

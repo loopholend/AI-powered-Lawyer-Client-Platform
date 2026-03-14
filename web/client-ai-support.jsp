@@ -1,448 +1,144 @@
 <%@ page session="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    Integer userId = (Integer) session.getAttribute("userId");
-    if (userId == null) {
+    String userType = (String) session.getAttribute("userType");
+    if (session.getAttribute("userId") == null || !"client".equals(userType)) {
         response.sendRedirect("login.html");
         return;
     }
-    
-    String firstName = (String) session.getAttribute("firstName");
-    if (firstName == null || firstName.isEmpty()) {
-        firstName = "U";
-    }
 %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support - Client</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dark-mode.css">
-    <script src="dark-mode.js" defer></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #f9fafb;
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .main-wrap {
-            max-width: 600px;
-            margin: 0 auto;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 10px rgba(60,72,100,0.05);
-        }
-
-        .content-header {
-            background: #fff;
-            padding: 1rem 1.5rem 1rem 1.5rem;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .ai-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-        .content-header h1 {
-            font-size: 1.2rem;
-            color: #1f2937;
-            margin: 0;
-        }
-        .content-header p {
-            font-size: 0.95rem;
-            color: #6b7280;
-            margin: 0;
-        }
-        .tools-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin: 0.5rem;
-            flex-wrap: wrap;
-            font-size: 0.92rem;
-        }
-        .tool-btn {
-            padding: 0.4rem 1.1rem;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            background: #f3f6fb;
-            color: #2563eb;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-        }
-        .tool-btn.active, .tool-btn:hover {
-            background: #2563eb;
-            color: white;
-        }
-        .chat-container {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            position:relative;
-            border-radius: 0 0 0 0;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 1.1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-            max-height: 63vh;
-            min-height: 100px;
-            background: #f9fafb;
-        }
-        .message {
-            display: flex;
-            gap: 0.7rem;
-            max-width: 92%;
-            align-items: flex-start;
-        }
-        .message.user {
-            flex-direction: row-reverse;
-            margin-left: auto;
-        }
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #ccd6f6;
-            color: #2563eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-        }
-        .message.user .message-avatar {
-            background: #10b981;
-            color: #fff;
-        }
-        .message-content {
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            background: #fff;
-            font-size: 0.97rem;
-            box-shadow: 0 1px 4px rgba(60,72,100,0.045);
-            color: #262732;
-            word-break: break-word;
-            white-space: pre-line;
-            border: 1px solid #eaecf2;
-        }
-        .message.user .message-content {
-            background: #2563eb;
-            color: white;
-            border: 1px solid #2563eb;
-        }
-        .welcome-message {
-            text-align: center;
-            color: #6b7280;
-            padding: 0.7rem 0;
-        }
-        .welcome-message h3 {
-            margin: 0.5rem 0 0.7rem 0;
-            font-weight: 500;
-            font-size: 1.14rem;
-        }
-        .quick-tools {
-            display: flex;
-            gap: 0.7rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 0.8rem 0 0 0;
-        }
-        .quick-tool-card {
-            background: #fff;
-            border: 2px solid #e5e7eb;
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: border .2s, box-shadow .2s;
-            text-align: center;
-            font-size: 0.9rem;
-            min-width: 120px;
-        }
-        .quick-tool-card:hover {
-            border-color: #2563eb;
-            box-shadow: 0 2px 8px rgba(37,99,235,.07);
-        }
-        .quick-tool-card i { font-size: 1.15rem; color: #2563eb; margin-bottom: 0.3rem;}
-        .chat-input-container {
-            border-top: 2px solid #f3f6fb;
-            padding: 0.8rem 1rem 0.8rem 1rem;
-            background: #fff;
-            display: flex;
-            gap: 0.6rem;
-            align-items: flex-end;
-        }
-        .chat-input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            border: 1.8px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            resize: none;
-            min-height: 40px;
-            max-height: 100px;
-            background: #f9fafb;
-        }
-        .send-btn {
-            padding: 0.8rem 1.3rem;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background .2s, box-shadow .2s;
-        }
-        .send-btn:hover { background: #1e40af; box-shadow: 0 4px 15px #cfd5f7a9;}
-        .send-btn:disabled { background: #9ca3af; }
-        @media (max-width:650px) {
-            .main-wrap { max-width: 100vw; min-width:0; box-shadow:none;}
-            .chat-container { border-radius:0; }
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; color: #111827; }
+        .content-header { background: #FFFFFF; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #E5E7EB; }
+        .content-header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
+        .content-header p { margin: 0; color: #6b7280; }
+        .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+        .card h3 { margin: 0 0 0.75rem; }
+        .status-badge { margin: 0 0 1rem; border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.9rem; border: 1px solid #E5E7EB; }
+        .status-ok { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+        .status-warning { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+        .btn { background: #C9A227; color: #fff; border: none; border-radius: 8px; padding: 0.7rem 1.1rem; font-weight: 600; cursor: pointer; }
+        .btn:hover { background: #A9861F; }
+        .input-area { width: 100%; max-width: 100%; min-height: 130px; border: 1px solid #E5E7EB; border-radius: 8px; padding: 0.9rem; font-family: inherit; font-size: 0.95rem; resize: vertical; }
+        .input-area:focus { outline: none; border-color: #C9A227; }
+        .response { margin-top: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 1rem; color: #374151; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+        .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .chip { border: 1px solid #E5E7EB; background: #FFFFFF; color: #111827; border-radius: 999px; padding: 0.45rem 0.8rem; font-size: 0.85rem; cursor: pointer; }
+        .chip:hover { border-color: #C9A227; color: #A9861F; }
+        .note { color: #6b7280; font-size: 0.85rem; margin-top: 0.6rem; }
     </style>
 </head>
 <body>
-    <div class="main-wrap">
-        <div class="content-header">
-            <div class="ai-icon"><i class="fas fa-robot"></i></div>
-            <div>
-                <h1>AI Legal Assistant</h1>
-                <p style="margin-top:2px;">Ask about law, procedures, or government forms</p>
-            </div>
-        </div>
-        <div class="tools-bar">
-            <button class="tool-btn active" onclick="setMode('general')"><i class="fas fa-question-circle"></i> Legal Advice</button>
-            <button class="tool-btn" onclick="setMode('rights')"><i class="fas fa-shield-alt"></i> Your Rights</button>
-            <button class="tool-btn" onclick="setMode('documents')"><i class="fas fa-file-alt"></i> Documents</button>
-            <button class="tool-btn" onclick="setMode('procedures')"><i class="fas fa-tasks"></i> Procedures</button>
-        </div>
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="welcome-message">
-                    <i class="fas fa-balance-scale" style="font-size:2rem; color:#2563eb; margin-bottom:2px;"></i>
-                    <h3>Welcome to AI Legal Assistant!</h3>
-                    <p>Ask about Indian law, rights, forms, or court process</p>
-                    <div class="quick-tools">
-                        <div class="quick-tool-card" onclick="quickStart('rights')"><i class="fas fa-home"></i><div>Tenant Rights</div></div>
-                        <div class="quick-tool-card" onclick="quickStart('consumer')"><i class="fas fa-shopping-cart"></i><div>Consumer Rights</div></div>
-                        <div class="quick-tool-card" onclick="quickStart('divorce')"><i class="fas fa-ring"></i><div>Divorce Process</div></div>
-                        <div class="quick-tool-card" onclick="quickStart('fir')"><i class="fas fa-file-signature"></i><div>File FIR</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <textarea id="messageInput" class="chat-input" placeholder="Type your legal question..."></textarea>
-                <button id="sendBtn" class="send-btn" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
+    <div class="content-header">
+        <h1><i class="fas fa-robot"></i> AI Support</h1>
+        <p>This chat uses the API key configured in backend file <code>src/java/AIConfig.java</code>.</p>
     </div>
-    <script type="importmap">
-    {
-      "imports": {
-        "@google/generative-ai": "https://esm.run/@google/generative-ai"
-      }
-    }
-    </script>
-    <script type="module">
-    import { GoogleGenerativeAI } from "@google/generative-ai";
-    const API_KEY = "AIzaSyBEXfMRXVqFd1iN_uQkAHVR2B57I9K81uc";
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-    let currentMode = 'general';
-    let typingDiv = null;
 
-    const documentLinks = {
-        'fir': 'https://www.ecourts.gov.in/',
-        'bail': 'https://www.ecourts.gov.in/',
-        'affidavit': 'https://www.ecourts.gov.in/services/affidavit',
-        'rtt': 'https://rtionline.gov.in/',
-        'consumer complaint': 'https://consumerhelpline.gov.in/',
-        'divorce': 'https://doj.gov.in/',
-        'property': 'https://igrs.gov.in/'
-    };
+    <div class="card">
+        <h3>Ask your question</h3>
+        <div id="modeStatus" class="status-badge status-ok">Using backend AI configuration.</div>
+        <textarea id="prompt" class="input-area" placeholder="Example: What documents should I prepare for a property dispute?"></textarea>
+        <button id="askBtn" class="btn" onclick="generateAnswer()">Get Guidance</button>
+        <div class="chips">
+            <button class="chip" onclick="setPrompt('What documents are useful for a family law case?')">Family law documents</button>
+            <button class="chip" onclick="setPrompt('How should I summarize my case for a lawyer?')">Case summary format</button>
+            <button class="chip" onclick="setPrompt('How can I prepare for my first lawyer consultation?')">First consultation prep</button>
+        </div>
+        <div id="answer" class="response" style="display:none;"></div>
+        <div class="note">Note: AI output is informational and not a substitute for formal legal advice.</div>
+    </div>
 
-    window.setMode = function(mode) {
-        currentMode = mode;
-        document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.closest('.tool-btn').classList.add('active');
-        document.getElementById('messageInput').focus();
-    };
-
-    window.quickStart = function(type) {
-        const prompts = {
-            'rights': 'What are my rights as a tenant in India?',
-            'consumer': 'How do I file a consumer complaint?',
-            'divorce': 'What is the divorce process in India and what documents do I need?',
-            'fir': 'How do I file an FIR and what are my rights when dealing with police?'
-        };
-        document.getElementById('messageInput').value = prompts[type];
-        document.querySelector('.welcome-message').style.display = 'none';
-        document.getElementById('messageInput').focus();
-        sendMessage();
-    };
-
-    window.sendMessage = async function() {
-        const input = document.getElementById('messageInput');
-        const message = input.value.trim();
-        if (!message) return;
-        document.querySelector('.welcome-message').style.display = 'none';
-        addMessage(message, 'user');
-        input.value = '';
-        input.style.height = "40px";
-        document.getElementById('messageInput').focus();
-
-        const sendBtn = document.getElementById('sendBtn');
-        sendBtn.disabled = true;
-        showTyping();
-        try {
-            const systemPrompt = getSystemPrompt(currentMode);
-            const fullPrompt = systemPrompt + "\n\nUser Question: " + message;
-            const result = await model.generateContent(fullPrompt);
-            const response = await result.response;
-            let text = response.text();
-            let additionalLinks = checkForDocumentLinks(message);
-            if (additionalLinks) {
-                text += "\n\n**📎 Helpful Resources:**\n" + additionalLinks;
-            }
-            hideTyping();
-            addMessage(text, 'ai');
-            sendBtn.disabled = false;
-            setTimeout(() => { document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight; }, 80);
-        } catch (error) {
-            hideTyping();
-            addMessage('Sorry, I encountered an error. Please try again.', 'ai');
-            sendBtn.disabled = false;
+    <script>
+        function setPrompt(text) {
+            document.getElementById('prompt').value = text;
         }
-    };
 
-    function getSystemPrompt(mode) {
-        const prompts = {
-            'general': "You are a helpful AI legal assistant for Indian law. Provide clear, accurate information.\n\n" +
-                "**For complex legal situations**: Provide case strength analysis with percentage, strengths, weaknesses, applicable laws.\n" +
-                "**For simple questions**: Give clear, concise answers in plain language.\n" +
-                "**Always include**: Relevant Indian laws and sections, practical steps, and disclaimer to consult a lawyer.\n\n" +
-                "Be empathetic and easy to understand.",
-            'rights': "You are an AI assistant helping people understand their LEGAL RIGHTS in India.\n\n" +
-                "When explaining rights:\n" +
-                "1. **Explain the right clearly** in simple language\n" +
-                "2. **Cite the law**: Mention Constitutional Articles or specific Acts\n" +
-                "3. **How to exercise**: Practical steps to use the right\n" +
-                "4. **Where to complain**: If rights are violated\n" +
-                "5. **Important notes**: Limitations or exceptions\n\n" +
-                "Always remind to consult a lawyer for specific cases.",
-            'documents': "You are an AI assistant helping with LEGAL DOCUMENTS and forms.\n\n" +
-                "When asked about documents:\n" +
-                "1. **Explain the document purpose**\n" +
-                "2. **List required information/fields**\n" +
-                "3. **Where to obtain**: Government portals, courts, etc.\n" +
-                "4. **Filing process**: How to submit\n" +
-                "5. **Fees involved**: If applicable\n\n" +
-                "Mention 'See helpful links below' (links will be added automatically).",
-            'procedures': "You are an AI assistant explaining LEGAL PROCEDURES in India.\n\n" +
-                "When explaining procedures:\n" +
-                "1. **Step-by-step process**: Clear numbered steps\n" +
-                "2. **Timeline**: How long each step takes\n" +
-                "3. **Documents needed**: What to prepare\n" +
-                "4. **Costs involved**: Filing fees, etc.\n" +
-                "5. **Common mistakes**: What to avoid\n\n" +
-                "Use simple language and be thorough."
-        };
-        return prompts[mode] || prompts['general'];
-    }
+        function setStatus(message, type) {
+            var status = document.getElementById('modeStatus');
+            status.className = 'status-badge ' + (type === 'ok' ? 'status-ok' : 'status-warning');
+            status.textContent = message;
+        }
 
-    function checkForDocumentLinks(message) {
-        const lowerMessage = message.toLowerCase();
-        let links = "";
-        for (let [keyword, url] of Object.entries(documentLinks)) {
-            if (lowerMessage.includes(keyword)) {
-                const displayName = keyword.charAt(0).toUpperCase() + keyword.slice(1);
-                links += `• ${displayName}: <a href="${url}" target="_blank" style="color:#2563eb;">${url}</a><br>`;
+        function normalizeText(text) {
+            if (!text) return '';
+            return String(text).replace(/\\n/g, '\n').trim();
+        }
+
+        function localClientReply(prompt) {
+            var lower = prompt.toLowerCase();
+            var lines = ['Here is a quick guidance response:'];
+
+            if (lower.indexOf('document') !== -1) {
+                lines.push('1) Keep identity proof, timeline notes, and related records ready.');
+                lines.push('2) Label each document by date for faster lawyer review.');
+            } else if (lower.indexOf('consult') !== -1 || lower.indexOf('meeting') !== -1) {
+                lines.push('1) Prepare a one-page summary (events, dates, desired outcome).');
+                lines.push('2) Carry evidence and ask direct next-step questions.');
+            } else {
+                lines.push('1) Write a short timeline with dates and involved parties.');
+                lines.push('2) Gather supporting records and urgent deadlines.');
+                lines.push('3) Confirm final strategy with a verified lawyer.');
+            }
+
+            return lines.join('\n');
+        }
+
+        async function generateAnswer() {
+            var prompt = document.getElementById('prompt').value.trim();
+            var answer = document.getElementById('answer');
+            var askBtn = document.getElementById('askBtn');
+
+            if (!prompt) {
+                answer.style.display = 'block';
+                answer.textContent = 'Please type your question first.';
+                return;
+            }
+
+            askBtn.disabled = true;
+            askBtn.textContent = 'Thinking...';
+            answer.style.display = 'block';
+            answer.textContent = 'Generating response...';
+
+            try {
+                var body = new URLSearchParams({ prompt: prompt, role: 'client' });
+                var response = await fetch('AiSupportServlet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body.toString()
+                });
+
+                var data = await response.json();
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.message || 'Request failed');
+                }
+
+                var text = normalizeText(data.reply);
+                if (!text) {
+                    text = localClientReply(prompt);
+                }
+
+                answer.textContent = text;
+                if (data.mode === 'fallback') {
+                    setStatus('Using built-in fallback reply. Update key in backend file when ready.', 'warning');
+                } else {
+                    setStatus('Using backend AI key (live).', 'ok');
+                }
+            } catch (err) {
+                answer.textContent = localClientReply(prompt) + '\n\n(Using built-in reply due to request issue.)';
+                setStatus('Request issue detected. Using built-in fallback reply.', 'warning');
+            } finally {
+                askBtn.disabled = false;
+                askBtn.textContent = 'Get Guidance';
             }
         }
-        if (lowerMessage.includes('form') || lowerMessage.includes('document') || lowerMessage.includes('blank')) {
-            if (!links) {
-                links += "• eCourts India: <a href='https://ecourts.gov.in/ecourts_home/' target='_blank' style='color:#2563eb;'>https://ecourts.gov.in/</a><br>";
-                links += "• Department of Justice: <a href='https://doj.gov.in/' target='_blank' style='color:#2563eb;'>https://doj.gov.in/</a><br>";
-            }
-        }
-        return links;
-    }
-
-    function addMessage(text, sender) {
-        const messagesDiv = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message ' + sender;
-        const avatar = document.createElement('div');
-        avatar.className = 'message-avatar';
-        avatar.innerHTML = sender === 'user' ? '<%= firstName.substring(0, 1).toUpperCase() %>' : '<i class="fas fa-robot"></i>';
-        const content = document.createElement('div');
-        content.className = 'message-content';
-        let formattedText = text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/###\s*(.*)/g, '<h4 style="margin:0.3rem 0;color:#1f2937;">$1</h4>')
-            .replace(/##\s*(.*)/g, '<h3 style="margin:0.3rem 0;color:#1f2937;">$1</h3>')
-            .replace(/•\s/g, '<br>• ')
-            .replace(/\n/g, '<br>');
-        content.innerHTML = formattedText;
-        messageDiv.appendChild(avatar);
-        messageDiv.appendChild(content);
-        messagesDiv.appendChild(messageDiv);
-        setTimeout(() => { messagesDiv.scrollTop = messagesDiv.scrollHeight; }, 40);
-    }
-
-    function showTyping() {
-        typingDiv = document.createElement('div');
-        typingDiv.className = 'message ai';
-        typingDiv.innerHTML = '<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><em>Typing...</em></div>';
-        document.getElementById('chatMessages').appendChild(typingDiv);
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    }
-
-    function hideTyping() {
-        if (typingDiv) typingDiv.remove();
-    }
-
-    document.getElementById('messageInput').addEventListener('input', function() {
-        this.style.height = '40px';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-    document.getElementById('messageInput').addEventListener('focus', function() {
-        this.scrollIntoView({block:"nearest"});
-    });
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
     </script>
 </body>
 </html>

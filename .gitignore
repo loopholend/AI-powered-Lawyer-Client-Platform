@@ -1,0 +1,20 @@
+# Build output
+/build/
+/dist/
+/out/
+
+# NetBeans local/private config
+/nbproject/private/
+/nbproject/*.private
+
+# Logs and temp
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime uploads/cache (if created)
+/uploads/
+/tmp/

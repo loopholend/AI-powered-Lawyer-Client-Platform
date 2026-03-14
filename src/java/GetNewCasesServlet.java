@@ -16,11 +16,7 @@ public class GetNewCasesServlet extends HttpServlet {
         ResultSet rs = null;
         
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root"
-            );
+            conn = DBConnectionUtil.getConnection();
             
             // Get all pending cases with client information
             String sql = 

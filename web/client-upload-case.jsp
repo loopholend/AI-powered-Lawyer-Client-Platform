@@ -7,6 +7,7 @@
         return;
     }
     
+    // Get client_id from database
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -41,16 +42,9 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dark-mode.css">
-    <script src="dark-mode.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        body { 
-            margin: 0; 
-            padding: 20px; 
-            background: #f9fafb; 
-            font-family: 'Inter', sans-serif; 
-        }
-        
+        body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; }
         .content-header {
             background: white;
             padding: 1.5rem 2rem;
@@ -60,18 +54,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
-        
-        .content-header h1 { 
-            color: #1f2937; 
-            font-size: 1.75rem; 
-            margin: 0; 
-        }
-        
+        .content-header h1 { color: #111827; font-size: 1.75rem; margin: 0; }
         .btn-add-case {
-            background: #2563eb;
+            background: #C9A227;
             color: white;
             padding: 0.75rem 1.5rem;
             border: none;
@@ -79,15 +65,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
-        
-        .btn-add-case:hover { 
-            background: #1e40af; 
-            transform: translateY(-2px); 
-        }
+        .btn-add-case:hover { background: #A9861F; transform: translateY(-2px); }
         
         .modal {
             display: none;
@@ -100,18 +79,13 @@
             background: rgba(0,0,0,0.5);
             overflow-y: auto;
         }
-        
-        .modal.active { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
         
         .modal-content {
             background: white;
             border-radius: 12px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
             margin: 20px;
@@ -119,18 +93,12 @@
         
         .modal-header {
             padding: 1.5rem 2rem;
-            border-bottom: 2px solid #f9fafb;
+            border-bottom: 2px solid #F8FAFC;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .modal-header h2 { 
-            color: #1f2937; 
-            margin: 0; 
-            font-size: 1.5rem; 
-        }
-        
+        .modal-header h2 { color: #111827; margin: 0; font-size: 1.5rem; }
         .close-btn {
             background: none;
             border: none;
@@ -138,85 +106,65 @@
             color: #6b7280;
             cursor: pointer;
         }
+        .close-btn:hover { color: #111827; }
         
-        .close-btn:hover { 
-            color: #1f2937; 
-        }
-        
-        .modal-body { 
-            padding: 2rem; 
-        }
-        
-        .rating-container {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .rating-stars {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin: 1rem 0;
-        }
-        
-        .star {
-            font-size: 2.5rem;
-            color: #d1d5db;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .star:hover,
-        .star.active {
-            color: #fbbf24;
-            transform: scale(1.1);
-        }
+        .modal-body { padding: 2rem; }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
         .form-group label {
             display: block;
-            color: #1f2937;
+            color: #111827;
             font-weight: 500;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
         }
-        
-        .required {
-            color: #ef4444;
-        }
-        
+        .required { color: #ef4444; }
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #E5E7EB;
             border-radius: 8px;
             font-size: 0.95rem;
             font-family: 'Inter', sans-serif;
             transition: border-color 0.3s;
-            box-sizing: border-box;
+        }
+        .form-control:focus { outline: none; border-color: #C9A227; }
+        textarea.form-control { min-height: 120px; resize: vertical; }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
         
-        .form-control:focus { 
-            outline: none; 
-            border-color: #2563eb; 
+        .file-upload {
+            border: 2px dashed #E5E7EB;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        
-        textarea.form-control { 
-            min-height: 120px; 
-            resize: vertical; 
+        .file-upload:hover { border-color: #C9A227; background: #F8FAFC; }
+        .file-upload.active { border-color: #C9A227; background: #eff6ff; }
+        .file-upload i { font-size: 3rem; color: #6b7280; margin-bottom: 1rem; }
+        .file-upload p { color: #6b7280; margin: 0.5rem 0; }
+        .file-name {
+            color: #C9A227;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: none;
         }
         
         .modal-footer {
             padding: 1.5rem 2rem;
-            border-top: 2px solid #f9fafb;
+            border-top: 2px solid #F8FAFC;
             display: flex;
             gap: 1rem;
             justify-content: flex-end;
         }
-        
         .btn-cancel, .btn-submit {
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -226,189 +174,48 @@
             font-size: 0.95rem;
             transition: all 0.3s;
         }
-        
-        .btn-cancel { 
-            background: #f9fafb; 
-            color: #1f2937; 
-        }
-        
-        .btn-cancel:hover { 
-            background: #e5e7eb; 
-        }
-        
-        .btn-submit { 
-            background: #2563eb; 
-            color: white; 
-        }
-        
-        .btn-submit:hover { 
-            background: #1e40af; 
-        }
+        .btn-cancel { background: #F8FAFC; color: #111827; }
+        .btn-cancel:hover { background: #E5E7EB; }
+        .btn-submit { background: #C9A227; color: white; }
+        .btn-submit:hover { background: #A9861F; }
         
         .cases-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
         }
-        
         .case-card {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #2563eb;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
+            border-left: 4px solid #C9A227;
         }
-        
-        .case-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
         .case-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
-            gap: 1rem;
         }
-        
-        .case-title { 
-            font-size: 1.2rem; 
-            font-weight: 700; 
-            color: #1f2937;
-            word-break: break-word;
-            flex: 1;
-        }
-        
+        .case-title { font-size: 1.2rem; font-weight: 700; color: #111827; }
         .case-status {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
-            white-space: nowrap;
-            flex-shrink: 0;
         }
-        
-        .status-pending { 
-            background: #fef3c7; 
-            color: #92400e; 
-        }
-        
-        .status-active { 
-            background: #dcfce7; 
-            color: #166534; 
-        }
-        
-        .status-completed { 
-            background: #d1fae5; 
-            color: #065f46; 
-        }
-        
-        .status-cancelled { 
-            background: #fee2e2; 
-            color: #991b1b; 
-        }
-        
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-in_progress { background: #dbeafe; color: #1d4ed8; }
+        .status-resolved { background: #dcfce7; color: #166534; }
+        .status-closed { background: #e5e7eb; color: #374151; }
         .case-meta {
             color: #6b7280;
             font-size: 0.9rem;
             line-height: 1.6;
             margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
         }
-        
-        .case-meta i { 
-            color: #2563eb; 
-            width: 18px; 
-            margin-right: 0.5rem;
-            flex-shrink: 0;
-        }
-        
-        .case-actions {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .btn-complete, 
-        .btn-cancel-case,
-        .btn-view-requests {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .btn-complete {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-complete:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-        
-        .btn-cancel-case {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .btn-cancel-case:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-        
-        .btn-view-requests {
-            background: #2563eb;
-            color: white;
-        }
-        
-        .btn-view-requests:hover {
-            background: #1e40af;
-            transform: translateY(-2px);
-        }
-        
-        .case-completed-badge, 
-        .case-cancelled-badge {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        .case-completed-badge {
-            background: #d1fae5;
-            color: #065f46;
-            border: 2px solid #a7f3d0;
-        }
-        
-        .case-cancelled-badge {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid #fecaca;
-        }
+        .case-meta i { color: #C9A227; width: 18px; margin-right: 0.5rem; }
         
         .empty-state {
             text-align: center;
@@ -416,33 +223,12 @@
             background: white;
             border-radius: 12px;
         }
+        .empty-state i { font-size: 4rem; color: #E5E7EB; margin-bottom: 1rem; }
+        .empty-state h3 { color: #111827; margin-bottom: 0.5rem; }
+        .empty-state p { color: #6b7280; }
         
-        .empty-state i { 
-            font-size: 4rem; 
-            color: #e5e7eb; 
-            margin-bottom: 1rem; 
-        }
-        
-        .empty-state h3 { 
-            color: #1f2937; 
-            margin-bottom: 0.5rem; 
-        }
-        
-        .empty-state p { 
-            color: #6b7280; 
-        }
-        
-        small {
-            display: block;
-            color: #6b7280;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .cases-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -462,7 +248,7 @@
         <p>Click "Add New Case" to submit your first case</p>
     </div>
 
-    <!-- Add Case Modal -->
+    <!-- Modal -->
     <div id="caseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -480,54 +266,68 @@
                                placeholder="Brief title of your legal matter" required>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="caseType">Case Type <span class="required">*</span></label>
-                        <select id="caseType" name="caseType" class="form-control" required>
-                            <option value="">Select Case Type</option>
-                            <option value="Criminal Law">Criminal Law</option>
-                            <option value="Civil Law">Civil Law</option>
-                            <option value="Family Law">Family Law</option>
-                            <option value="Corporate Law">Corporate Law</option>
-                            <option value="Property Law">Property Law</option>
-                            <option value="Tax Law">Tax Law</option>
-                            <option value="Labour Law">Labour Law</option>
-                            <option value="Consumer Law">Consumer Law</option>
-                            <option value="Intellectual Property">Intellectual Property</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="caseType">Case Type <span class="required">*</span></label>
+                            <select id="caseType" name="caseType" class="form-control" required>
+                                <option value="">Select Case Type</option>
+                                <option value="Criminal Law">Criminal Law</option>
+                                <option value="Civil Law">Civil Law</option>
+                                <option value="Family Law">Family Law</option>
+                                <option value="Corporate Law">Corporate Law</option>
+                                <option value="Property Law">Property Law</option>
+                                <option value="Tax Law">Tax Law</option>
+                                <option value="Labour Law">Labour Law</option>
+                                <option value="Intellectual Property">Intellectual Property</option>
+                                <option value="Consumer Law">Consumer Law</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="city">City <span class="required">*</span></label>
+                            <input type="text" id="city" name="city" class="form-control" 
+                                   placeholder="City where case needs to be filed" required>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="city">City <span class="required">*</span></label>
-                        <input type="text" id="city" name="city" class="form-control" 
-                               placeholder="City where case needs to be filed" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="urgency">Urgency Level</label>
-                        <select id="urgency" name="urgency" class="form-control">
-                            <option value="Normal">Normal</option>
-                            <option value="Urgent">Urgent</option>
-                            <option value="Very Urgent">Very Urgent</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="budget">Budget (Optional)</label>
-                        <input type="text" id="budget" name="budget" class="form-control" 
-                               placeholder="Enter your budget for this case">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="caseDocument">Upload Document (Optional)</label>
-                        <input type="file" id="caseDocument" name="caseDocument" class="form-control" 
-                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                        <small>Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="urgency">Urgency Level</label>
+                            <select id="urgency" name="urgency" class="form-control">
+                                <option value="Normal">Normal</option>
+                                <option value="Urgent">Urgent</option>
+                                <option value="Very Urgent">Very Urgent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="budget">Budget Range</label>
+                            <select id="budget" name="budget" class="form-control">
+                                <option value="">Not decided</option>
+                                <option value="Less than ₹10,000">Less than ₹10,000</option>
+                                <option value="₹10,000 - ₹50,000">₹10,000 - ₹50,000</option>
+                                <option value="₹50,000 - ₹1,00,000">₹50,000 - ₹1,00,000</option>
+                                <option value="Above ₹1,00,000">Above ₹1,00,000</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="description">Case Description <span class="required">*</span></label>
                         <textarea id="description" name="description" class="form-control" 
                                   placeholder="Provide detailed description of your case..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload Case Documents (Optional)</label>
+                        <div class="file-upload" id="fileUpload" onclick="document.getElementById('caseDocument').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Click to upload</strong> or drag and drop</p>
+                            <p style="font-size: 0.85rem;">PDF, DOC, DOCX (Max 5MB)</p>
+                            <div class="file-name" id="fileName"></div>
+                        </div>
+                        <input type="file" id="caseDocument" name="caseDocument" 
+                               accept=".pdf,.doc,.docx" style="display: none;" onchange="handleFileSelect()">
                     </div>
                 </div>
                 
@@ -539,66 +339,46 @@
         </div>
     </div>
 
-    <!-- Rating Modal -->
-    <div id="ratingModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Rate Your Lawyer</h2>
-                <button class="close-btn" onclick="closeRatingModal()">&times;</button>
-            </div>
-            
-            <form id="ratingForm" action="RateLawyerServlet" method="POST">
-                <input type="hidden" name="caseId" id="ratingCaseId">
-                <input type="hidden" name="rating" id="ratingValue" value="0">
-                
-                <div class="modal-body">
-                    <div class="rating-container">
-                        <p style="color: #6b7280; margin-bottom: 1rem;">How would you rate the lawyer who handled your case?</p>
-                        <div class="rating-stars" id="ratingStars">
-                            <i class="fas fa-star star" data-rating="1"></i>
-                            <i class="fas fa-star star" data-rating="2"></i>
-                            <i class="fas fa-star star" data-rating="3"></i>
-                            <i class="fas fa-star star" data-rating="4"></i>
-                            <i class="fas fa-star star" data-rating="5"></i>
-                        </div>
-                        <p id="ratingText" style="color: #2563eb; font-weight: 600; min-height: 24px;"></p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="review">Review (Optional)</label>
-                        <textarea id="review" name="review" class="form-control" 
-                                  placeholder="Share your experience with this lawyer..."></textarea>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeRatingModal()">Cancel</button>
-                    <button type="submit" class="btn-submit" id="submitRatingBtn" disabled>Submit & Complete</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        let selectedRating = 0;
-        
+        <script>
         window.onload = function() {
             loadCases();
-            setupRatingStars();
             
+            // Check for success message from URL
             var urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('completed') === 'true' && urlParams.get('rated') === 'true') {
-                showMessage('Case completed and lawyer rated successfully!', 'success');
-            } else if (urlParams.get('completed') === 'true') {
-                showMessage('Case marked as completed!', 'success');
-            } else if (urlParams.get('cancelled') === 'true') {
-                showMessage('Case cancelled successfully!', 'success');
+            if (urlParams.get('success') === 'true') {
+                showSuccessMessage();
+                // Remove the success parameter from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
             } else if (urlParams.get('error') === 'true') {
-                showMessage('An error occurred. Please try again.', 'error');
-            } else if (urlParams.get('success') === 'true') {
-                showMessage('Case submitted successfully!', 'success');
+                showErrorMessage();
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         };
+
+        function showSuccessMessage() {
+            var messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; animation: slideIn 0.3s ease;';
+            messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Case submitted successfully!';
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(function() {
+                messageDiv.style.animation = 'slideOut 0.3s ease';
+                setTimeout(function() {
+                    document.body.removeChild(messageDiv);
+                }, 300);
+            }, 3000);
+        }
+
+        function showErrorMessage() {
+            var messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ef4444; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999;';
+            messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error submitting case. Please try again.';
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(function() {
+                document.body.removeChild(messageDiv);
+            }, 3000);
+        }
 
         function openModal() {
             document.getElementById('caseModal').classList.add('active');
@@ -609,78 +389,42 @@
             document.getElementById('caseModal').classList.remove('active');
             document.body.style.overflow = 'auto';
             document.getElementById('caseForm').reset();
+            document.getElementById('fileName').style.display = 'none';
+            document.getElementById('fileUpload').classList.remove('active');
         }
 
-        function setupRatingStars() {
-            var stars = document.querySelectorAll('.star');
-            var ratingText = document.getElementById('ratingText');
-            var submitBtn = document.getElementById('submitRatingBtn');
-            var ratingLabels = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+        function handleFileSelect() {
+            var fileInput = document.getElementById('caseDocument');
+            var fileName = document.getElementById('fileName');
+            var fileUpload = document.getElementById('fileUpload');
             
-            stars.forEach(function(star) {
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.getAttribute('data-rating'));
-                    document.getElementById('ratingValue').value = selectedRating;
-                    
-                    stars.forEach(function(s) {
-                        if (parseInt(s.getAttribute('data-rating')) <= selectedRating) {
-                            s.classList.add('active');
-                        } else {
-                            s.classList.remove('active');
-                        }
-                    });
-                    
-                    ratingText.textContent = ratingLabels[selectedRating - 1];
-                    submitBtn.disabled = false;
-                });
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
                 
-                star.addEventListener('mouseenter', function() {
-                    var hoverRating = parseInt(this.getAttribute('data-rating'));
-                    stars.forEach(function(s) {
-                        if (parseInt(s.getAttribute('data-rating')) <= hoverRating) {
-                            s.style.color = '#fbbf24';
-                        } else {
-                            s.style.color = s.classList.contains('active') ? '#fbbf24' : '#d1d5db';
-                        }
-                    });
-                });
-            });
-            
-            document.getElementById('ratingStars').addEventListener('mouseleave', function() {
-                stars.forEach(function(s) {
-                    if (parseInt(s.getAttribute('data-rating')) <= selectedRating) {
-                        s.style.color = '#fbbf24';
-                    } else {
-                        s.style.color = '#d1d5db';
-                    }
-                });
-            });
-        }
-
-        function showMessage(text, type) {
-            var messageDiv = document.createElement('div');
-            var bgColor = type === 'success' ? '#10b981' : '#ef4444';
-            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: ' + bgColor + '; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999;';
-            messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + text;
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(function() {
-                messageDiv.style.opacity = '0';
-                messageDiv.style.transition = 'opacity 0.3s';
-                setTimeout(function() {
-                    if (document.body.contains(messageDiv)) {
-                        document.body.removeChild(messageDiv);
-                    }
-                }, 300);
-            }, 3000);
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    fileInput.value = '';
+                    return;
+                }
+                
+                fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+                fileName.style.display = 'block';
+                fileUpload.classList.add('active');
+            }
         }
 
         function loadCases() {
-            fetch('GetClientCasesServlet')
+            console.log('Loading cases...');
+            
+            fetch('GetCasesServlet')
                 .then(function(response) {
+                    console.log('Response status:', response.status);
                     return response.json();
                 })
                 .then(function(data) {
+                    console.log('Cases loaded:', data.length);
+                    
                     var grid = document.getElementById('casesGrid');
                     var emptyState = document.getElementById('emptyState');
                     
@@ -701,44 +445,15 @@
                         var statusClass = 'status-' + c.status;
                         var statusText = c.status.charAt(0).toUpperCase() + c.status.slice(1);
                         
-                        var actionButtons = '';
-                        
-                        if (c.status === 'pending' || c.status === 'active') {
-                            actionButtons = 
-                                '<div class="case-actions">' +
-                                    (c.status === 'pending' ? 
-                                        '<button class="btn-view-requests" onclick="viewRequests(' + c.caseId + ')">' +
-                                            '<i class="fas fa-users"></i> View Lawyer Requests' +
-                                        '</button>' : '') +
-                                    '<button class="btn-complete" onclick="openRatingModal(' + c.caseId + ')">' +
-                                        '<i class="fas fa-check"></i> Mark Completed' +
-                                    '</button>' +
-                                    '<button class="btn-cancel-case" onclick="cancelCase(' + c.caseId + ')">' +
-                                        '<i class="fas fa-times"></i> Cancel Case' +
-                                    '</button>' +
-                                '</div>';
-                        } else if (c.status === 'completed') {
-                            actionButtons = 
-                                '<div class="case-completed-badge">' +
-                                    '<i class="fas fa-check-circle"></i> Case Completed' +
-                                '</div>';
-                        } else if (c.status === 'cancelled') {
-                            actionButtons = 
-                                '<div class="case-cancelled-badge">' +
-                                    '<i class="fas fa-ban"></i> Case Cancelled' +
-                                '</div>';
-                        }
-                        
                         card.innerHTML =
                             '<div class="case-header">' +
-                                '<div class="case-title">' + escapeHtml(c.title) + '</div>' +
+                                '<div class="case-title">' + c.title + '</div>' +
                                 '<div class="case-status ' + statusClass + '">' + statusText + '</div>' +
                             '</div>' +
-                            '<div class="case-meta"><i class="fas fa-gavel"></i>' + escapeHtml(c.type) + '</div>' +
-                            '<div class="case-meta"><i class="fas fa-map-marker-alt"></i>' + escapeHtml(c.city) + '</div>' +
+                            '<div class="case-meta"><i class="fas fa-gavel"></i>' + c.type + '</div>' +
+                            '<div class="case-meta"><i class="fas fa-map-marker-alt"></i>' + c.city + '</div>' +
                             '<div class="case-meta"><i class="fas fa-clock"></i>Urgency: ' + (c.urgency || 'Normal') + '</div>' +
-                            '<div class="case-meta"><i class="fas fa-calendar"></i>Submitted: ' + c.createdAt + '</div>' +
-                            actionButtons;
+                            '<div class="case-meta"><i class="fas fa-calendar"></i>Submitted: ' + c.createdAt + '</div>';
                         
                         grid.appendChild(card);
                     });
@@ -749,50 +464,11 @@
                 });
         }
 
-        function viewRequests(caseId) {
-            window.location.href = 'client-lawyer-requests.jsp';
-        }
-
-        function escapeHtml(text) {
-            var div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function openRatingModal(caseId) {
-            document.getElementById('ratingCaseId').value = caseId;
-            document.getElementById('ratingModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            selectedRating = 0;
-            document.getElementById('ratingValue').value = 0;
-            document.querySelectorAll('.star').forEach(function(s) { s.classList.remove('active'); });
-            document.getElementById('ratingText').textContent = '';
-            document.getElementById('submitRatingBtn').disabled = true;
-            document.getElementById('review').value = '';
-        }
-
-        function closeRatingModal() {
-            document.getElementById('ratingModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function cancelCase(caseId) {
-            if (confirm('Are you sure you want to cancel this case?')) {
-                var form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'CancelCaseServlet';
-                
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'caseId';
-                input.value = caseId;
-                form.appendChild(input);
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
+        // Add CSS animations
+        var style = document.createElement('style');
+        style.textContent = '@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }';
+        document.head.appendChild(style);
     </script>
+
 </body>
 </html>

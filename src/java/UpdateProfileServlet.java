@@ -31,11 +31,7 @@ public class UpdateProfileServlet extends HttpServlet {
         PreparedStatement pstmt = null;
         
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root"
-            );
+            conn = DBConnectionUtil.getConnection();
             
             String sql = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, city = ? WHERE user_id = ?";
             pstmt = conn.prepareStatement(sql);

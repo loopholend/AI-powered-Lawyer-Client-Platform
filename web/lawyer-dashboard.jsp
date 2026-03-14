@@ -21,12 +21,9 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         :root {
-            --lawyer-primary: #ec4899;
-            --lawyer-secondary: #db2777;
-        }
-        
-        .sidebar {
-            background: linear-gradient(180deg, #ec4899 0%, #db2777 100%) !important;
+            --primary-color: #C9A227;
+            --secondary-color: #A9861F;
+            --navbar-color: #0B1F3A;
         }
     </style>
 </head>
@@ -35,17 +32,19 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-gavel"></i>
+                    <i class="fas fa-balance-scale"></i>
                     <span>LegalConnect</span>
                 </div>
                 
                 <div class="user-info">
                     <div class="user-avatar">
-                        <%= firstName.substring(0, 1).toUpperCase() %><%= lastName.substring(0, 1).toUpperCase() %>
+                        <%= firstName.charAt(0) %><%= lastName.charAt(0) %>
                     </div>
                     <div class="user-name">Hello, Adv. <%= firstName %></div>
                     <div class="user-email"><%= email %></div>
-                    <div class="user-type">Verified Lawyer</div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; margin-top: 0.5rem; display: inline-block;">
+                        Verified Lawyer
+                    </div>
                 </div>
             </div>
 
@@ -55,15 +54,23 @@
                     <span>Dashboard Home</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-new-cases.jsp')">
-                    <i class="fas fa-folder"></i>
+                    <i class="fas fa-folder-plus"></i>
                     <span>New Cases</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-active-cases.jsp')">
                     <i class="fas fa-briefcase"></i>
                     <span>Active Cases</span>
                 </a>
+                <a class="nav-item" onclick="loadPage('case-chat.jsp')">
+                    <i class="fas fa-comments"></i>
+                    <span>Case Chat</span>
+                </a>
+                <a class="nav-item" onclick="loadPage('notifications.jsp')">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-label">Notifications <span id="lawyerNotifBadge" class="nav-badge" style="display:none;">0</span></span>
+                </a>
                 <a class="nav-item" onclick="loadPage('lawyer-profile.jsp')">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user-tie"></i>
                     <span>Lawyer Info</span>
                 </a>
                 <a class="nav-item" onclick="loadPage('lawyer-ai-support.jsp')">
@@ -82,19 +89,19 @@
         </main>
     </div>
 
-    <!-- Logout Modal -->
+    <!-- Logout Confirmation Modal -->
     <div id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
             <div style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <h2 style="color: #1f2937; margin-bottom: 0.5rem; font-size: 1.5rem;">Logout Confirmation</h2>
+            <h2 style="color: #111827; margin-bottom: 0.5rem; font-size: 1.5rem;">Logout Confirmation</h2>
             <p style="color: #6b7280; margin-bottom: 2rem;">Are you sure you want to logout?</p>
             <div style="display: flex; gap: 1rem;">
-                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #f9fafb; color: #1f2937; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 0.75rem; background: #F8FAFC; color: #111827; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
                     Cancel
                 </button>
-                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+                <button onclick="confirmLogout()" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
@@ -125,6 +132,24 @@
         function confirmLogout() {
             window.location.href = 'LogoutServlet';
         }
+
+        function refreshNotificationBadge() {
+            fetch('GetNotificationsServlet')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    var badge = document.getElementById('lawyerNotifBadge');
+                    if (!data.success || !data.unreadCount) {
+                        badge.style.display = 'none';
+                        return;
+                    }
+                    badge.textContent = data.unreadCount > 99 ? '99+' : data.unreadCount;
+                    badge.style.display = 'inline-flex';
+                })
+                .catch(function() {});
+        }
+
+        refreshNotificationBadge();
+        setInterval(refreshNotificationBadge, 12000);
     </script>
 </body>
 </html>

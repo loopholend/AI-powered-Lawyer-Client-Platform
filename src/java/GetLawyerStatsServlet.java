@@ -33,11 +33,8 @@ public class GetLawyerStatsServlet extends HttpServlet {
         double avgRating = 0.0;
         
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/legalconnect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root"
-            );
+            conn = DBConnectionUtil.getConnection();
+            FeatureSchemaUtil.ensureInitialized(conn);
             
             // Get lawyer_id
             String getLawyerIdSql = "SELECT lawyer_id FROM lawyers WHERE user_id = ?";
@@ -65,7 +62,7 @@ public class GetLawyerStatsServlet extends HttpServlet {
             pstmt.close();
             
             // Count active cases (assigned to this lawyer)
-            String activeCasesSql = "SELECT COUNT(*) as count FROM cases WHERE lawyer_id = ? AND case_status = 'active'";
+            String activeCasesSql = "SELECT COUNT(*) as count FROM cases WHERE lawyer_id = ? AND case_status IN ('active','in_progress')";
             pstmt = conn.prepareStatement(activeCasesSql);
             pstmt.setInt(1, lawyerId);
             rs = pstmt.executeQuery();
@@ -86,8 +83,19 @@ public class GetLawyerStatsServlet extends HttpServlet {
             rs.close();
             pstmt.close();
             
-            // TODO: Calculate average rating when rating system is implemented
-            avgRating = 4.5; // Placeholder
+            // Calculate average rating from submitted client reviews
+            String ratingSql = "SELECT AVG(rating) AS avg_rating FROM lawyer_reviews WHERE lawyer_user_id = ?";
+            pstmt = conn.prepareStatement(ratingSql);
+            pstmt.setInt(1, userId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                avgRating = rs.getDouble("avg_rating");
+                if (rs.wasNull()) {
+                    avgRating = 0.0;
+                }
+            }
+            rs.close();
+            pstmt.close();
             
             out.print("{");
             out.print("\"newCases\":" + newCases + ",");

@@ -1,78 +1,26 @@
 <%@ page session="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-    Integer userId = (Integer) session.getAttribute("userId");
-    if (userId == null) {
-        response.sendRedirect("login.html");
-        return;
-    }
-%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dark-mode.css">
-    <script src="dark-mode.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #f9fafb;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .page-header {
+        body { margin: 0; padding: 20px; background: #F8FAFC; font-family: 'Inter', sans-serif; }
+        .content-header {
             background: white;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             border-radius: 12px;
             margin-bottom: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        
-        .page-header h1 {
-            color: #1f2937;
-            font-size: 2rem;
-            margin: 0 0 0.5rem 0;
-        }
-        
-        .page-header p {
-            color: #6b7280;
-            margin: 0;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #6b7280;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-            color: white;
-            border-color: #ec4899;
-        }
-        
-        .tab:hover:not(.active) {
-            border-color: #ec4899;
-            color: #ec4899;
-        }
+        .content-header h1 { color: #111827; font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .content-header p { color: #6b7280; }
         
         .cases-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
             gap: 1.5rem;
         }
         
@@ -81,13 +29,7 @@
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #ec4899;
-            transition: all 0.3s;
-        }
-        
-        .case-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 4px solid #10b981;
         }
         
         .case-header {
@@ -95,14 +37,20 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
-            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #F8FAFC;
         }
         
         .case-title {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #1f2937;
-            flex: 1;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-id {
+            font-size: 0.85rem;
+            color: #6b7280;
         }
         
         .status-badge {
@@ -110,22 +58,8 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        .status-active {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #b45309;
-        }
-        
-        .status-completed {
-            background: #d1fae5;
-            color: #065f46;
+            background: #dcfce7;
+            color: #166534;
         }
         
         .client-info {
@@ -134,115 +68,97 @@
             gap: 1rem;
             margin-bottom: 1rem;
             padding: 1rem;
-            background: #f9fafb;
+            background: #F8FAFC;
             border-radius: 8px;
         }
         
         .client-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0B1F3A 0%, #0B1F3A 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
             font-weight: 700;
-        }
-        
-        .client-details {
-            flex: 1;
         }
         
         .client-name {
             font-weight: 600;
-            color: #1f2937;
+            color: #111827;
             margin-bottom: 0.25rem;
         }
         
-        .client-email {
-            color: #6b7280;
+        .client-contact {
             font-size: 0.85rem;
-        }
-        
-        .case-description {
             color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
         
-        .case-meta {
+        .detail-row {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
             gap: 0.75rem;
+            padding: 0.5rem 0;
             color: #6b7280;
             font-size: 0.9rem;
         }
         
-        .meta-item i {
-            color: #ec4899;
-            width: 18px;
+        .detail-row i {
+            color: #10b981;
+            width: 20px;
         }
-        
-        .case-actions {
+        .status-control {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E5E7EB;
+        }
+        .status-control label {
+            display: block;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+        .status-select, .status-note {
+            width: 100%;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            padding: 0.55rem 0.65rem;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+        .status-note {
+            min-height: 66px;
+            resize: vertical;
+        }
+        .status-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        
-        .btn-update, .btn-complete, .btn-view {
-            flex: 1;
-            padding: 0.75rem 1rem;
+        .btn-status, .btn-timeline {
             border: none;
             border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
         }
-        
-        .btn-update {
-            background: #ec4899;
-            color: white;
+        .btn-status { background: #2563eb; }
+        .btn-timeline { background: #6b7280; }
+        .timeline-list {
+            margin-top: 0.75rem;
+            background: #F8FAFC;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 0.65rem;
+            display: none;
         }
-        
-        .btn-update:hover {
-            background: #db2777;
-            transform: translateY(-2px);
-        }
-        
-        .btn-complete {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-complete:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-        
-        .btn-view {
-            background: #f9fafb;
-            color: #1f2937;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .btn-view:hover {
-            background: #e5e7eb;
+        .timeline-item {
+            font-size: 0.85rem;
+            color: #374151;
+            margin-bottom: 0.45rem;
         }
         
         .empty-state {
@@ -251,344 +167,160 @@
             background: white;
             border-radius: 12px;
         }
-        
-        .empty-state i {
-            font-size: 4rem;
-            color: #e5e7eb;
-            margin-bottom: 1rem;
-        }
-        
-        .empty-state h3 {
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        
-        .empty-state p {
-            color: #6b7280;
-        }
-        
-        /* Update Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-        }
-        
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .modal-header h2 {
-            color: #1f2937;
-            margin: 0;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #6b7280;
-            cursor: pointer;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #1f2937;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #ec4899;
-        }
-        
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
-        }
-        
-        @media (max-width: 768px) {
-            .cases-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        .empty-state i { font-size: 4rem; color: #E5E7EB; margin-bottom: 1rem; }
+        .empty-state h3 { color: #111827; margin-bottom: 0.5rem; }
+        .empty-state p { color: #6b7280; }
     </style>
 </head>
 <body>
-    <div class="page-header">
-        <h1><i class="fas fa-briefcase"></i> My Active Cases</h1>
-        <p>Manage your ongoing cases and client communications</p>
+    <div class="content-header">
+        <h1>Active Cases</h1>
+        <p>Manage your ongoing client cases</p>
     </div>
 
-    <div class="tabs">
-        <div class="tab active" onclick="filterCases('all')">
-            <i class="fas fa-list"></i> All Cases
-        </div>
-        <div class="tab" onclick="filterCases('active')">
-            <i class="fas fa-play-circle"></i> Active
-        </div>
-        <div class="tab" onclick="filterCases('pending')">
-            <i class="fas fa-clock"></i> Pending
-        </div>
-        <div class="tab" onclick="filterCases('completed')">
-            <i class="fas fa-check-circle"></i> Completed
-        </div>
+    <div id="loadingState" style="display: none; text-align: center; padding: 3rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: #10b981;"></i>
+        <p style="margin-top: 1rem; color: #6b7280;">Loading active cases...</p>
     </div>
 
     <div id="casesGrid" class="cases-grid"></div>
-    
+
     <div id="emptyState" class="empty-state" style="display: none;">
         <i class="fas fa-briefcase"></i>
         <h3>No Active Cases</h3>
-        <p>Your accepted cases will appear here</p>
-    </div>
-
-    <!-- Update Modal -->
-    <div id="updateModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Update Case Status</h2>
-                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
-            </div>
-            
-            <form id="updateForm" onsubmit="submitUpdate(event)">
-                <input type="hidden" id="updateCaseId" name="caseId">
-                
-                <div class="form-group">
-                    <label>Case Status</label>
-                    <select class="form-control" name="status" required>
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Update Notes</label>
-                    <textarea class="form-control" name="notes" required
-                              placeholder="Enter case progress notes..."></textarea>
-                </div>
-                
-                <button type="submit" class="btn-submit">
-                    <i class="fas fa-save"></i> Save Update
-                </button>
-            </form>
-        </div>
+        <p>You don't have any active cases at the moment.</p>
+        <p style="margin-top: 1rem;">Accepted cases will appear here.</p>
     </div>
 
     <script>
-        var currentFilter = 'all';
-        
         window.onload = function() {
-            loadCases();
+            loadActiveCases();
         };
-        
-        function filterCases(filter) {
-            currentFilter = filter;
+
+        function loadActiveCases() {
+            document.getElementById('loadingState').style.display = 'block';
             
-            document.querySelectorAll('.tab').forEach(function(tab) {
-                tab.classList.remove('active');
-            });
-            event.target.closest('.tab').classList.add('active');
-            
-            loadCases();
-        }
-        
-        function loadCases() {
-            fetch('GetLawyerActiveCasesServlet?filter=' + currentFilter)
-                .then(function(response) {
-                    return response.json();
-                })
+            fetch('GetActiveCasesServlet')
+                .then(function(response) { return response.json(); })
                 .then(function(data) {
+                    document.getElementById('loadingState').style.display = 'none';
+                    
+                    if (data.length === 0) {
+                        document.getElementById('emptyState').style.display = 'block';
+                        return;
+                    }
+                    
                     displayCases(data);
+                    document.getElementById('casesGrid').style.display = 'grid';
                 })
                 .catch(function(error) {
-                    console.error('Error loading cases:', error);
+                    console.error('Error:', error);
+                    document.getElementById('loadingState').style.display = 'none';
                     document.getElementById('emptyState').style.display = 'block';
                 });
         }
-        
+
         function displayCases(cases) {
             var grid = document.getElementById('casesGrid');
-            var emptyState = document.getElementById('emptyState');
-            
-            if (cases.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            grid.style.display = 'grid';
-            emptyState.style.display = 'none';
             grid.innerHTML = '';
-            
+
             cases.forEach(function(c) {
                 var card = document.createElement('div');
                 card.className = 'case-card';
                 
-                var statusClass = 'status-' + c.status.toLowerCase();
-                var clientInitials = c.clientName.split(' ').map(function(n) { return n[0]; }).join('');
+                var initials = c.clientFirstName.charAt(0) + c.clientLastName.charAt(0);
                 
                 card.innerHTML =
                     '<div class="case-header">' +
-                        '<div class="case-title">' + escapeHtml(c.title) + '</div>' +
-                        '<div class="status-badge ' + statusClass + '">' + c.status + '</div>' +
+                        '<div>' +
+                            '<div class="case-title">' + c.title + '</div>' +
+                            '<div class="case-id">Case ID: #' + c.caseId + '</div>' +
+                        '</div>' +
+                        '<div class="status-badge">' + formatStatus(c.status) + '</div>' +
                     '</div>' +
-                    
                     '<div class="client-info">' +
-                        '<div class="client-avatar">' + clientInitials + '</div>' +
-                        '<div class="client-details">' +
-                            '<div class="client-name">' + escapeHtml(c.clientName) + '</div>' +
-                            '<div class="client-email">' + escapeHtml(c.clientEmail) + '</div>' +
+                        '<div class="client-avatar">' + initials + '</div>' +
+                        '<div>' +
+                            '<div class="client-name">' + c.clientFirstName + ' ' + c.clientLastName + '</div>' +
+                            '<div class="client-contact">' + c.clientEmail + ' | ' + c.clientPhone + '</div>' +
                         '</div>' +
                     '</div>' +
-                    
-                    '<div class="case-description">' + escapeHtml(c.description) + '</div>' +
-                    
-                    '<div class="case-meta">' +
-                        '<div class="meta-item"><i class="fas fa-tag"></i><span>' + escapeHtml(c.type) + '</span></div>' +
-                        '<div class="meta-item"><i class="fas fa-map-marker-alt"></i><span>' + escapeHtml(c.city) + '</span></div>' +
-                        '<div class="meta-item"><i class="fas fa-calendar"></i><span>Started: ' + c.acceptedDate + '</span></div>' +
-                    '</div>' +
-                    
-                    '<div class="case-actions">' +
-                        '<button class="btn-update" onclick="openUpdateModal(' + c.caseId + ')">' +
-                            '<i class="fas fa-edit"></i> Update' +
-                        '</button>' +
-                        (c.status !== 'Completed' ? 
-                            '<button class="btn-complete" onclick="completeCase(' + c.caseId + ')">' +
-                                '<i class="fas fa-check"></i> Complete' +
-                            '</button>' : '') +
-                        '<button class="btn-view" onclick="viewCase(' + c.caseId + ')">' +
-                            '<i class="fas fa-eye"></i> View' +
-                        '</button>' +
+                    '<div class="detail-row"><i class="fas fa-gavel"></i><span>' + c.type + '</span></div>' +
+                    '<div class="detail-row"><i class="fas fa-map-marker-alt"></i><span>' + c.city + '</span></div>' +
+                    '<div class="detail-row"><i class="fas fa-money-bill-wave"></i><span>' + formatMoney(c.budget) + '</span></div>' +
+                    '<div class="status-control">' +
+                        '<label>Update Case Status</label>' +
+                        '<select class="status-select" id="status-' + c.caseId + '">' +
+                            '<option value="active"' + (c.status === 'active' ? ' selected' : '') + '>Active</option>' +
+                            '<option value="in_progress"' + (c.status === 'in_progress' ? ' selected' : '') + '>In Progress</option>' +
+                            '<option value="resolved"' + (c.status === 'resolved' ? ' selected' : '') + '>Resolved</option>' +
+                            '<option value="closed"' + (c.status === 'closed' ? ' selected' : '') + '>Closed</option>' +
+                        '</select>' +
+                        '<textarea class="status-note" id="note-' + c.caseId + '" placeholder="Add an optional timeline note"></textarea>' +
+                        '<div class="status-actions">' +
+                            '<button class="btn-status" onclick="updateStatus(' + c.caseId + ')">Save Status</button>' +
+                            '<button class="btn-timeline" onclick="toggleTimeline(' + c.caseId + ')">View Timeline</button>' +
+                        '</div>' +
+                        '<div class="timeline-list" id="timeline-' + c.caseId + '"></div>' +
                     '</div>';
                 
                 grid.appendChild(card);
             });
         }
-        
-        function openUpdateModal(caseId) {
-            document.getElementById('updateCaseId').value = caseId;
-            document.getElementById('updateModal').classList.add('active');
+
+        function formatMoney(value) {
+            if (!value) return 'Not specified';
+            return value.replace(/Rs\./gi, '₹').replace(/Rs/gi, '₹').replace(/₹\s+/g, '₹');
         }
-        
-        function closeUpdateModal() {
-            document.getElementById('updateModal').classList.remove('active');
-            document.getElementById('updateForm').reset();
+
+        function formatStatus(status) {
+            if (!status) return 'Unknown';
+            return status.replace('_', ' ').replace(/\b\w/g, function(ch) { return ch.toUpperCase(); });
         }
-        
-        function submitUpdate(event) {
-            event.preventDefault();
-            
-            var formData = new FormData(event.target);
-            
+
+        function updateStatus(caseId) {
+            var status = document.getElementById('status-' + caseId).value;
+            var note = document.getElementById('note-' + caseId).value;
+
             fetch('UpdateCaseStatusServlet', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'caseId=' + encodeURIComponent(caseId) + '&status=' + encodeURIComponent(status) + '&note=' + encodeURIComponent(note)
             })
-            .then(function(response) {
-                return response.text();
-            })
+            .then(function(response) { return response.json(); })
             .then(function(data) {
-                closeUpdateModal();
-                alert('Case updated successfully!');
-                loadCases();
+                if (!data.success) {
+                    alert(data.message || 'Failed to update status');
+                    return;
+                }
+                alert('Case status updated');
+                loadActiveCases();
             })
-            .catch(function(error) {
-                console.error('Error:', error);
-                alert('Failed to update case. Please try again.');
-            });
+            .catch(function() { alert('Failed to update status'); });
         }
-        
-        function completeCase(caseId) {
-            if (confirm('Mark this case as completed?')) {
-                var formData = new FormData();
-                formData.append('caseId', caseId);
-                formData.append('status', 'Completed');
-                formData.append('notes', 'Case completed successfully');
-                
-                fetch('UpdateCaseStatusServlet', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(function(response) {
-                    return response.text();
-                })
-                .then(function(data) {
-                    alert('Case marked as completed!');
-                    loadCases();
-                })
-                .catch(function(error) {
-                    console.error('Error:', error);
-                    alert('Failed to complete case.');
-                });
+
+        function toggleTimeline(caseId) {
+            var timeline = document.getElementById('timeline-' + caseId);
+            if (timeline.style.display === 'block') {
+                timeline.style.display = 'none';
+                return;
             }
-        }
-        
-        function viewCase(caseId) {
-            alert('View case details for ID: ' + caseId);
-        }
-        
-        function escapeHtml(text) {
-            var div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            timeline.style.display = 'block';
+            timeline.textContent = 'Loading timeline...';
+
+            fetch('GetCaseTimelineServlet?caseId=' + caseId)
+                .then(function(response) { return response.json(); })
+                .then(function(items) {
+                    var html = '';
+                    (items || []).forEach(function(item) {
+                        var note = item.note ? (' | ' + item.note) : '';
+                        html += '<div class="timeline-item"><strong>' + item.status + '</strong>' + note + ' <span style="color:#6b7280;">(' + item.actor + ' | ' + item.createdAt + ')</span></div>';
+                    });
+                    timeline.innerHTML = html || '<div class="timeline-item">No timeline entries yet.</div>';
+                })
+                .catch(function() {
+                    timeline.innerHTML = '<div class="timeline-item">Failed to load timeline.</div>';
+                });
         }
     </script>
 </body>
