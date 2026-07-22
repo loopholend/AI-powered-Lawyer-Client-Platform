@@ -26,7 +26,10 @@
 <body>
     <div class="head">
         <h1>Notifications</h1>
-        <button class="btn" onclick="markAllRead()">Mark all as read</button>
+        <div>
+            <button class="btn" onclick="markAllRead()" style="margin-right: 0.5rem;">Mark all as read</button>
+            <button class="btn" onclick="clearAll()" style="background: #ef4444;">Clear all</button>
+        </div>
     </div>
     <div id="list" class="list"></div>
 
@@ -61,6 +64,15 @@
 
         function markAllRead() {
             fetch('MarkNotificationsReadServlet', { method: 'POST' })
+                .then(function() { loadNotifications(); })
+                .catch(function() {});
+        }
+
+        function clearAll() {
+            if (!confirm('Are you sure you want to delete all notifications?')) {
+                return;
+            }
+            fetch('ClearNotificationsServlet', { method: 'POST' })
                 .then(function() { loadNotifications(); })
                 .catch(function() {});
         }
